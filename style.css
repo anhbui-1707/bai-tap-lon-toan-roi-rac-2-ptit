@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+
+* { box-sizing: border-box; }
+body { margin: 0; padding: 0; font-family: 'Nunito', sans-serif; display: flex; height: 100vh; overflow: hidden; background: #023e8a; user-select: none; }
+
+/* FIX LỖI TẠI ĐÂY: Thêm overflow-y, thu nhỏ padding và gap để vừa màn hình 15.6 inch */
+#game-sidebar {
+    width: 360px; background: rgba(10, 15, 30, 0.85); backdrop-filter: blur(25px);
+    border-right: 1px solid rgba(0, 229, 255, 0.2); color: white; 
+    padding: 20px 25px; /* Giảm padding dọc */
+    display: flex; flex-direction: column; 
+    gap: 15px; /* Giảm khoảng cách giữa các khối */
+    box-shadow: 10px 0 40px rgba(0,0,0,0.8); z-index: 100;
+    overflow-y: auto; /* Thêm thanh cuộn nếu màn hình quá bé */
+}
+
+/* Trang trí thanh cuộn cho Menu Sidebar */
+#game-sidebar::-webkit-scrollbar { width: 6px; }
+#game-sidebar::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.3); border-radius: 4px; }
+#game-sidebar::-webkit-scrollbar-thumb:hover { background: rgba(0, 229, 255, 0.6); }
+
+.logo {
+    font-size: 32px; font-weight: 900; background: linear-gradient(135deg, #00e5ff 0%, #00ff88 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; letter-spacing: 2px;
+    margin-bottom: 0px; filter: drop-shadow(0 4px 10px rgba(0, 229, 255, 0.4));
+}
+
+.panel { background: rgba(255, 255, 255, 0.03); border-radius: 16px; padding: 15px 18px; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 2px 15px rgba(0,0,0,0.3); }
+.panel-title { font-size: 13px; color: #80d8ff; font-weight: 900; margin-bottom: 10px; letter-spacing: 1px; }
+.panel-content { font-size: 14px; line-height: 1.5; color: #e2e8f0; }
+.stat-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 15px; }
+
+.badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; background: #22c55e; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+
+/* Thêm flex-shrink: 0 để nút không bị ép méo */
+.btn { padding: 12px 18px; border: none; border-radius: 12px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 15px; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 10px; flex-shrink: 0; }
+.btn:active { transform: scale(0.95); }
+.btn-nav { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 10px; }
+.btn-nav:hover { background: rgba(255,255,255,0.3); }
+.btn-action { background: linear-gradient(to bottom, #00b4db, #0083b0); color: #fff; box-shadow: 0 4px 15px rgba(0, 180, 219, 0.4), inset 0 2px 0 rgba(255,255,255,0.2); border: 1px solid #00e5ff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+.btn-action:hover { background: linear-gradient(to bottom, #00c6ff, #0072ff); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 180, 219, 0.6); }
+.btn-hint { background: linear-gradient(to bottom, #f59e0b, #d97706); color: #fff; border: 1px solid #fbbf24; }
+.btn-hint:hover { background: linear-gradient(to bottom, #fbbf24, #f59e0b); }
+.btn-reset { background: rgba(225, 29, 72, 0.1); color: #fda4af; border: 1px solid rgba(225, 29, 72, 0.5); }
+.btn-reset:hover { background: #e11d48; color: white; border-color: #be123c; }
+
+/* FIX LỖI TẠI ĐÂY: Thêm margin-bottom để nút không dính mép dưới */
+.btn-back { background: transparent; border: 1px solid #475569; color: #94a3b8; margin-top: auto; margin-bottom: 10px; }
+.btn-back:hover { background: rgba(255,255,255,0.1); color: white; }
+
+#game-main { flex: 1; position: relative; overflow: hidden; background: #001f3f; }
+#water-bg, #edges-canvas, #cy-game, #boat-canvas { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+#water-bg { z-index: 0; }
+#edges-canvas { z-index: 1; animation: floatCamera 12s ease-in-out infinite; }
+#cy-game { z-index: 2; animation: floatCamera 12s ease-in-out infinite; }
+#cy-game canvas { outline: none !important; -webkit-tap-highlight-color: transparent; }
+#boat-canvas { z-index: 3; pointer-events: none; animation: floatCamera 12s ease-in-out infinite; }
+
+@keyframes floatCamera { 0%, 100% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-12px) scale(1.01); } }
+
+/* === Modal & Victory Styles === */
+.modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 10, 25, 0.85); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.modal-content { 
+    background: linear-gradient(145deg, #1e293b, #0f172a); padding: 45px; border-radius: 30px; text-align: center; 
+    max-width: 480px; width: 90%; color: white; border: 2px solid #00e5ff; 
+    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.9), 0 0 50px rgba(0, 229, 255, 0.3); 
+}
+
+.victory-bounce { animation: juicyBounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes juicyBounce { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.1); } 70% { transform: scale(0.9); } 100% { transform: scale(1); opacity: 1; } }
+.modal-icon { font-size: 85px; margin-bottom: 10px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); animation: floatIcon 2s ease-in-out infinite; }
+.victory-text { margin: 0 0 15px 0; color: #00e5ff; font-size: 34px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 4px 10px rgba(0,229,255,0.5); }
+.modal-content p { font-size: 18px; line-height: 1.6; margin-bottom: 30px; color: #cbd5e1; font-weight: bold; }
+
+@keyframes floatIcon { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-12px) scale(1.08); } }
+.shake-screen { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes shake { 10%, 90% { transform: translate3d(-4px, 0, 0); } 20%, 80% { transform: translate3d(6px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-10px, 0, 0); } 40%, 60% { transform: translate3d(10px, 0, 0); } }
