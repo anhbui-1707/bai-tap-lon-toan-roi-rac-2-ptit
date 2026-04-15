@@ -3,7 +3,7 @@
 * { box-sizing: border-box; }
 body { margin: 0; padding: 0; font-family: 'Nunito', sans-serif; display: flex; height: 100vh; overflow: hidden; background: #023e8a; user-select: none; }
 
-/* FIX LỖI TẠI ĐÂY: Thêm overflow-y, thu nhỏ padding và gap để vừa màn hình 15.6 inch */
+
 #game-sidebar {
     width: 360px; background: rgba(10, 15, 30, 0.85); backdrop-filter: blur(25px);
     border-right: 1px solid rgba(0, 229, 255, 0.2); color: white; 
@@ -14,7 +14,7 @@ body { margin: 0; padding: 0; font-family: 'Nunito', sans-serif; display: flex; 
     overflow-y: auto; /* Thêm thanh cuộn nếu màn hình quá bé */
 }
 
-/* Trang trí thanh cuộn cho Menu Sidebar */
+
 #game-sidebar::-webkit-scrollbar { width: 6px; }
 #game-sidebar::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.3); border-radius: 4px; }
 #game-sidebar::-webkit-scrollbar-thumb:hover { background: rgba(0, 229, 255, 0.6); }
@@ -32,7 +32,7 @@ body { margin: 0; padding: 0; font-family: 'Nunito', sans-serif; display: flex; 
 
 .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; background: #22c55e; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
 
-/* Thêm flex-shrink: 0 để nút không bị ép méo */
+
 .btn { padding: 12px 18px; border: none; border-radius: 12px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 15px; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 10px; flex-shrink: 0; }
 .btn:active { transform: scale(0.95); }
 .btn-nav { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 10px; }
@@ -44,7 +44,7 @@ body { margin: 0; padding: 0; font-family: 'Nunito', sans-serif; display: flex; 
 .btn-reset { background: rgba(225, 29, 72, 0.1); color: #fda4af; border: 1px solid rgba(225, 29, 72, 0.5); }
 .btn-reset:hover { background: #e11d48; color: white; border-color: #be123c; }
 
-/* FIX LỖI TẠI ĐÂY: Thêm margin-bottom để nút không dính mép dưới */
+
 .btn-back { background: transparent; border: 1px solid #475569; color: #94a3b8; margin-top: auto; margin-bottom: 10px; }
 .btn-back:hover { background: rgba(255,255,255,0.1); color: white; }
 
