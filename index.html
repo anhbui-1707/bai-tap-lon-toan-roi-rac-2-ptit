@@ -163,7 +163,7 @@
         }
 
         #right-sidebar {
-            width: 340px;
+            width: 360px;
             background: var(--card);
             border-left: 1px solid #334155;
             padding: 20px;
@@ -174,7 +174,7 @@
 
         .stat-card {
             background: #0f172a;
-            padding: 12px;
+            padding: 15px;
             border-radius: 10px;
             margin-bottom: 15px;
             border: 1px solid #334155;
@@ -188,7 +188,7 @@
             border-radius: 6px;
             margin-top: 8px;
             font-family: monospace;
-            font-size: 11px;
+            font-size: 14px;
             color: #cbd5e1;
             border: 1px solid #334155;
         }
@@ -211,10 +211,10 @@
             color: #000;
             font-weight: bold;
             text-align: center;
-            padding: 6px;
+            padding: 8px;
             border-radius: 4px;
             animation: slideIn 0.3s;
-            font-size: 14px;
+            font-size: 16px;
         }
 
         @keyframes slideIn {
@@ -225,24 +225,9 @@
         .path-display {
             font-family: 'Courier New', monospace;
             color: var(--secondary);
-            font-size: 13px;
+            font-size: 16px;
             word-break: break-all;
             line-height: 1.6;
-        }
-
-        .final-path {
-            font-family: 'Courier New', monospace;
-            color: var(--success);
-            font-size: 14px;
-            font-weight: bold;
-            word-break: break-all;
-            line-height: 1.6;
-        }
-
-        .selected-start {
-            background-color: var(--secondary) !important;
-            color: #000 !important;
-            border: 2px solid #fff;
         }
     </style>
 </head>
@@ -252,23 +237,23 @@
         <h2 style="color: var(--primary); margin: 0; font-size: 20px;"><i class="fas fa-project-diagram"></i> PTIT GRAPH</h2>
 
         <fieldset class="matrix-fieldset">
-            <legend class="matrix-legend"> Nhập ma trận kề </legend>
+            <legend class="matrix-legend">  Nhập ma trận kề  </legend>
             <div style="margin-bottom: 10px;">
-                <label style="font-size: 11px; color: #64748b;"><input type="radio" name="graph-type" value="undirected" checked>   Vô hướng   </label>
-                <label style="font-size: 11px; color: #64748b; margin-left: 10px;"><input type="radio" name="graph-type" value="directed">   Có hướng   </label>
+                <label style="font-size: 11px; color: #64748b;"><input type="radio" name="graph-type" value="undirected" checked>  Vô hướng  </label>
+                <label style="font-size: 11px; color: #64748b; margin-left: 10px;"><input type="radio" name="graph-type" value="directed">  Có hướng  </label>
             </div>
-            <textarea id="matrix-input" placeholder= "Nhập ma trận kề (ví dụ): &#10;0 1 1&#10;1 0 1&#10;1 1 0"></textarea>
+            <textarea id="matrix-input" placeholder= "Nhập ma trận kề (ví dụ):  &#10;0 1 1&#10;1 0 1&#10;1 1 0"></textarea>
             <div class="matrix-btn-group">
-                <button class="btn-matrix draw-btn" onclick="importMatrix()"> Vẽ từ ma trận </button>
-                <button class="btn-matrix clear-btn" onclick="clearMatrixInput()"> Xóa ma trận </button>
+                <button class="btn-matrix draw-btn" onclick="importMatrix()">  Vẽ từ ma trận  </button>
+                <button class="btn-matrix clear-btn" onclick="clearMatrixInput()">  Xóa ma trận  </button>
             </div>
         </fieldset>
 
-        <div class="group-label">   Vẽ Thủ Công   </div>
+        <div class="group-label">  Vẽ Thủ Công  </div>
         <button class="tool-btn active" id="mode-node" onclick="setMode('node', this)"><i class="fas fa-plus-circle"></i> Thêm Đỉnh</button>
-        <button class="tool-btn" id="mode-edge" onclick="setMode('edge', this)"><i class="fas fa-link"></i>   Thêm Cạnh   </button>
+        <button class="tool-btn" id="mode-edge" onclick="setMode('edge', this)"><i class="fas fa-link"></i>  Thêm Cạnh  </button>
         <button class="tool-btn" onclick="setMode('delete-node', this)"><i class="fas fa-trash"></i> Xóa Đỉnh</button>
-        <button class="tool-btn" onclick="setMode('delete-edge', this)"><i class="fas fa-cut"></i>   Xóa Cạnh   </button>
+        <button class="tool-btn" onclick="setMode('delete-edge', this)"><i class="fas fa-cut"></i>  Xóa Cạnh  </button>
 
         <div class="group-label">Random Đồ thị (4-20)</div>
         <div style="display: flex; gap: 5px;">
@@ -278,7 +263,7 @@
         <button class="tool-btn" onclick="generateRandom('cycle')"><i class="fas fa-dice"></i> Random Chu Trình Euler</button>
         <button class="tool-btn" onclick="generateRandom('path')"><i class="fas fa-random"></i> Random Đường Đi Euler</button>
 
-        <div class="group-label">   Vận Hành   </div>
+        <div class="group-label">  Vận Hành  </div>
         <div style="display: flex; gap: 5px; align-items: center;">
             <button class="tool-btn btn-run" onclick="selectStartNode()" style="flex: 1;"><i class="fas fa-play"></i> Chọn đỉnh bắt đầu</button>
             <input type="number" id="start-node-input" placeholder="Nhập số đỉnh" style="width: 120px; background: #0f172a; border: 1px solid var(--primary); color: white; padding: 8px; border-radius: 6px; font-size: 12px;">
@@ -289,6 +274,7 @@
         <button class="tool-btn" style="background: #e11d48;" onclick="location.reload()"><i class="fas fa-undo"></i> CLEAR ALL</button>
 
         <div class="group-label">Step-by-Step Control</div>
+        <button class="tool-btn" id="check-graph" onclick="checkGraphInstant()"><i class="fas fa-check-double"></i> Kiểm tra đồ thị</button>
         <button class="tool-btn" id="next-step" onclick="nextStep()" disabled><i class="fas fa-step-forward"></i> Next Step</button>
         <button class="tool-btn" id="auto-slow" onclick="toggleAutoSlow()"><i class="fas fa-play-circle"></i> Auto Slow</button>
         <button class="tool-btn" id="reset-sim" onclick="resetSimulation()"><i class="fas fa-redo"></i> Reset Đồ Thị</button>
@@ -296,7 +282,7 @@
 
     <div id="main">
         <div class="header-title">
-            <span style="font-size: 1.1em; font-weight: bold;">Màn hình: <span id="status-label" style="color: var(--secondary);">   THIẾT KẾ   </span></span>
+            <span style="font-size: 1.1em; font-weight: bold;">Màn hình: <span id="status-label" style="color: var(--secondary);">  THIẾT KẾ  </span></span>
         </div>
         <div id="cy" style="position: relative;"></div>
     </div>
@@ -304,24 +290,21 @@
     <div id="right-sidebar">
         <h3>📊 KẾT LUẬN & LÝ DO</h3>
         <div class="stat-card" id="res-container">
-            <div style="color: #94a3b8; font-size: 12px;">Đang chờ dữ liệu...</div>
+            <div style="color: #94a3b8; font-size: 14px;">Đang chờ dữ liệu...</div>
         </div>
 
         <h3>📚 ALGO STACK (LIFO)</h3>
         <div id="stack-view"></div>
 
-        <h3>ℹ️ CHI TIẾT TRẠNG THÁI</h3>
-        <div class="stat-card" id="detail-panel">
-            <div id="state-detail" style="font-size: 12px; line-height: 1.5; color: #cbd5e1;">
-                Chờ dữ liệu thuật toán... Hãy vẽ đồ thị và CHỌN ĐỈNH BẮT ĐẦU.
-            </div>
-        </div>
-
         <h3>🗂️ MẢNG TẠM CE</h3>
         <div class="stat-card path-display" id="ce-path">CE = [ ]</div>
 
-        <h3>📝 ĐƯỜNG ĐI CUỐI CÙNG</h3>
-        <div class="stat-card final-path" id="final-path">Chờ quá trình đảo ngược CE...</div>
+        <h3>ℹ️ CHI TIẾT TRẠNG THÁI</h3>
+        <div class="stat-card" id="detail-panel">
+            <div id="state-detail" style="font-size: 16px; line-height: 1.6; color: #e2e8f0;">
+                Chờ dữ liệu thuật toán... Hãy vẽ đồ thị và CHỌN ĐỈNH BẮT ĐẦU.
+            </div>
+        </div>
     </div>
 
     <script>
@@ -335,7 +318,7 @@
         }
 
         function resetResultPanel() {
-            document.getElementById('res-container').innerHTML = '<div style="color: #94a3b8; font-size: 12px;">Đang chờ dữ liệu...</div>';
+            document.getElementById('res-container').innerHTML = '<div style="color: #94a3b8; font-size: 14px;">Đang chờ dữ liệu...</div>';
         }
 
         function selectStartNode() {
@@ -354,37 +337,60 @@
         const cy = cytoscape({
             container: document.getElementById('cy'),
             style: [
-                { selector: 'node', style: { 'background-color': '#fff', 'border-width': 2, 'border-color': '#00d2ff', 'label': 'data(id)', 'color': '#000', 'text-valign': 'center', 'width': 35, 'height': 35, 'font-weight': 'bold', 'font-size': '12px' } },
+                { selector: 'node', style: { 'background-color': '#fff', 'border-width': 2, 'border-color': '#00d2ff', 'label': 'data(id)', 'color': '#000', 'text-valign': 'center', 'width': 55, 'height': 55, 'font-weight': 'bold', 'font-size': '18px' } },
                 { selector: 'edge', style: { 'width': 3, 'line-color': '#cbd5e1', 'curve-style': 'bezier', 'transition-property': 'line-color, width', 'transition-duration': '0.3s' } },
                 { selector: '.highlight', style: { 'line-color': '#f39c12', 'width': 6 } },
                 { selector: '.current', style: { 'line-color': '#ff6b6b', 'width': 8, 'shadow-blur': 10, 'shadow-color': '#ff6b6b', 'shadow-opacity': 0.6 } },
                 { selector: '.visited', style: { 'line-color': '#2ecc71', 'opacity': 0.7, 'width': 4 } },
-                
+
                 {
                     selector: 'node.selected-start',
                     style: {
-                        'background-color': '#2ecc71',
-                        'border-color': '#27ae60',
+                        'background-color': '#e11d48',
+                        'border-color': '#be123c',
                         'border-width': 4,
-                        'color': '#000'
+                        'color': '#fff'
                     }
                 },
                 {
                     selector: 'node.current-node',
                     style: {
-                        'background-color': '#f1c40f',
-                        'border-color': '#e67e22',
+                        'background-color': '#f59e0b',
+                        'border-color': '#d97706',
                         'border-width': 4,
                         'shadow-blur': 25,
-                        'shadow-color': '#f1c40f',
+                        'shadow-color': '#f59e0b',
                         'shadow-opacity': 1,
-                        'color': '#000',
-                        'width': 45,
-                        'height': 45
+                        'color': '#fff'
                     }
                 }
             ]
         });
+
+        function autoResizeNodes(totalNodes) {
+            let newSize = 55; 
+            let newFontSize = 18;
+            
+            if (totalNodes > 15) {
+                newSize = 30;
+                newFontSize = 12;
+            } else if (totalNodes > 10) {
+                newSize = 40;
+                newFontSize = 14;
+            } else if (totalNodes > 6) {
+                newSize = 48;
+                newFontSize = 16;
+            }
+
+            cy.style()
+              .selector('node')
+              .style({ 'width': newSize, 'height': newSize, 'font-size': newFontSize + 'px' })
+              .selector('node.selected-start')
+              .style({ 'width': newSize + 10, 'height': newSize + 10 })
+              .selector('node.current-node')
+              .style({ 'width': newSize + 10, 'height': newSize + 10 })
+              .update();
+        }
 
         function updateGraphStyle() {
             if (graphType === 'directed') {
@@ -426,13 +432,15 @@
             cy.elements().remove();
             startNodeSelected = null;
             mode = 'design';
-            document.getElementById('status-label').innerText =    'THIẾT KẾ'   ;
+            document.getElementById('status-label').innerText =  'THIẾT KẾ' ;
             document.getElementById('next-step').disabled = true;
             setStateDetail('<div>Tạo đồ thị mới. Nhấn "Chọn đỉnh bắt đầu" để bắt đầu thuật toán.</div>');
             let N = parseInt(document.getElementById('rand-count').value);
             N = Math.max(4, Math.min(20, N)); nodeCount = N;
             const center = { x: 300, y: 250 };
             const radius = Math.min(200, N * 15);
+
+            autoResizeNodes(N);
 
             for (let i = 1; i <= N; i++) {
                 let a = (i * 2 * Math.PI) / N;
@@ -464,11 +472,14 @@
             cy.elements().remove();
             startNodeSelected = null;
             mode = 'design';
-            document.getElementById('status-label').innerText =    'THIẾT KẾ'   ;
+            document.getElementById('status-label').innerText =  'THIẾT KẾ' ;
             document.getElementById('next-step').disabled = true;
             setStateDetail('<div>Import đồ thị mới. Nhấn "Chọn đỉnh bắt đầu" để bắt đầu thuật toán.</div>');
             const rows = input.split('\n');
             nodeCount = rows.length;
+            
+            autoResizeNodes(nodeCount);
+
             for (let i = 1; i <= nodeCount; i++) {
                 let a = (i * 2 * Math.PI) / nodeCount;
                 cy.add({ group: 'nodes', data: { id: i.toString() }, position: { x: 300 + 150 * Math.cos(a), y: 250 + 150 * Math.sin(a) } });
@@ -498,23 +509,20 @@
             return Object.keys(details).sort((a, b) => parseInt(a) - parseInt(b)).map(id => {
                 const nodeInfo = details[id] || {};
                 if (isDirected) return `Đỉnh ${id}: in=${nodeInfo.in || 0}, out=${nodeInfo.out || 0}`;
-                return `Đỉnh ${id}       : bậc=       ${nodeInfo.deg || 0}`;
+                return `Đỉnh ${id}        : bậc=        ${nodeInfo.deg || 0}`;
             }).join('<br>');
         }
 
         function updateStepDetail(currentNode, nextEdge, stack, CE, details, isDirected, eulerType) {
-            const stackText = stack.length ? `[ ${stack.join(', ')} ]` : '[]';
-            const ceText = CE.length ? `[ ${CE.join(', ')} ]` : '[]';
-            const edgeText = nextEdge ? `${nextEdge.from}     →     ${nextEdge.to}` : 'Đang pop stack / Cập nhật CE';
+            const edgeText = nextEdge ? `${nextEdge.from}  →  ${nextEdge.to}` : 'Đang pop stack / Cập nhật CE';
             const degreeText = renderDegreeSummary(details, isDirected);
+
             setStateDetail(`
-                <div style="color: var(--primary); font-weight: bold; margin-bottom: 5px;">Loại thuật toán:     ${eulerType}</div>
-                <div><b>Đỉnh hiện tại:</b> ${currentNode}</div>
-                <div><b>Cạnh đang xét:</b> ${edgeText}</div>
-                <div style="margin-top: 8px;"><b>Stack hiện tại:</b><br>    ${stackText}</div>
-                <div style="margin-top: 8px;"><b>CE hiện tại:</b><br>    ${ceText}</div>
-                <div style="margin-top: 8px;"><b>Điều kiện kiểm tra:</b> ${isDirected ? 'in-degree và out-degree' : 'bậc của đỉnh'}</div>
-                <div style="margin-top: 8px; font-family: monospace; color: #94a3b8;">${degreeText}</div>
+                <div style="color: var(--primary); font-weight: bold; margin-bottom: 12px; font-size: 18px; border-bottom: 2px solid #334155; padding-bottom: 8px;">Loại thuật toán: ${eulerType}</div>
+                <div style="font-size: 16px; margin-bottom: 8px;"><b>Đỉnh hiện tại:</b> <span style="background-color: #f59e0b; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 17px;">${currentNode}</span></div>
+                <div style="font-size: 16px; margin-bottom: 8px;"><b>Cạnh đang xét:</b> <span style="color: #2ecc71; font-weight: bold; font-size: 17px;">${edgeText}</span></div>
+                <div style="margin-top: 8px; font-size: 15px;"><b>Điều kiện:</b> ${isDirected ? 'in-degree và out-degree' : 'bậc của đỉnh'}</div>
+                <div style="margin-top: 10px; font-family: monospace; color: #cbd5e1; font-size: 15px; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; line-height: 1.6;">${degreeText}</div>
             `);
         }
 
@@ -630,9 +638,9 @@
                         status = 'Success'; type = 'EulerPath';
                     } else if (startCount === 0 && endCount === 0 && balancedCount === activeNodes) {
                         status = 'Success'; type = 'EulerCycle';
-                        startNode = (reqStartNode && totalDegree[reqStartNode] > 0) ? reqStartNode : anyStart;
+                        startNode = (reqStartNode && reqStartNode !== -1 && totalDegree[reqStartNode] > 0) ? reqStartNode : anyStart;
                     }
-                    if (status === 'Success') route = findEulerDirectedLocal(edges, startNode);
+                    if (status === 'Success' && startNode !== -1) route = findEulerDirectedLocal(edges, startNode);
                 } else {
                     const oddNodes = [];
                     let anyStart = -1;
@@ -643,13 +651,13 @@
                     });
                     if (oddNodes.length === 0) {
                         status = 'Success'; type = 'EulerCycle';
-                        startNode = (reqStartNode && totalDegree[reqStartNode] > 0) ? reqStartNode : anyStart;
+                        startNode = (reqStartNode && reqStartNode !== -1 && totalDegree[reqStartNode] > 0) ? reqStartNode : anyStart;
                     } else if (oddNodes.length === 2) {
                         status = 'Success'; type = 'EulerPath';
                         startNode = oddNodes[0];
                         if (reqStartNode === oddNodes[0] || reqStartNode === oddNodes[1]) startNode = reqStartNode;
                     }
-                    if (status === 'Success') route = findEulerUndirectedLocal(edges, startNode);
+                    if (status === 'Success' && startNode !== -1) route = findEulerUndirectedLocal(edges, startNode);
                 }
             }
             return { status, type, start_node: startNode, route, details, graphType, connected: weaklyConnected };
@@ -676,6 +684,9 @@
         cy.on('tap', (e) => {
             if (e.target === cy && mode === 'node') {
                 nodeCount++;
+                
+                cy.style().selector('node').style({ 'width': 55, 'height': 55, 'font-size': '18px' }).update();
+
                 cy.add({ group: 'nodes', data: { id: nodeCount.toString() }, position: e.position });
             }
         });
@@ -688,17 +699,20 @@
             }
             if (mode === 'select-start') {
                 cy.nodes().removeClass('selected-start');
-
                 startNodeSelected = parseInt(node.id());
                 node.addClass('selected-start');
                 runEulerAndInitialize(startNodeSelected);
                 return;
             }
             if (mode === 'edge') {
-                if (!source) { source = node; node.style('background-color', '#f39c12'); }
+                if (!source) {
+                    source = node;
+                    source.style({'background-color': '#3b82f6', 'border-color': '#2563eb', 'color': '#fff', 'border-width': '4px'});
+                }
                 else {
                     if (source.id() !== node.id()) cy.add({ data: { source: source.id(), target: node.id() } });
-                    source.style('background-color', '#fff'); source = null;
+                    source.removeStyle('background-color').removeStyle('border-color').removeStyle('color').removeStyle('border-width');
+                    source = null;
                 }
             }
         });
@@ -716,7 +730,6 @@
 
             document.getElementById('stack-view').innerHTML = "";
             document.getElementById('ce-path').innerText = "CE = [ ]";
-            document.getElementById('final-path').innerText = "Chờ quá trình đảo ngược CE...";
 
             let data;
             try {
@@ -741,11 +754,11 @@
                 if (isDirected) {
                     degreeItems.push(`Đỉnh ${id}: in=${nodeInfo.in || 0}, out=${nodeInfo.out || 0}`);
                 } else {
-                    degreeItems.push(`Đỉnh ${id}       : Bậc        ${nodeInfo.deg || 0}`);
+                    degreeItems.push(`Đỉnh ${id}        : Bậc         ${nodeInfo.deg || 0}`);
                 }
             }
 
-            if (data.route && data.route.length) routeText = data.route.join(   ' → '   );
+            if (data.route && data.route.length) routeText = data.route.join( ' → ' );
 
             let normalizedType = "NotEuler";
             if (data.status === "Success") {
@@ -772,7 +785,6 @@
                 }
             }
 
-            // --- XỬ LÝ TEXT KẾT LUẬN CHI TIẾT 4 TRƯỜNG HỢP ---
             let typeText = "Không phải đồ thị Euler";
             let explanation = "";
             let titleColor = data.status === "Success" ? "var(--primary)" : "#e74c3c";
@@ -804,10 +816,10 @@
             }
 
             const finalConclusionHTML = `
-                <div style="font-weight: bold; font-size: 15px; color: ${titleColor};">${typeText}</div>
+                <div style="font-weight: bold; font-size: 16px; color: ${titleColor};">${typeText}</div>
                 ${explanation}
-                <div class="degree-list"><b>[Bảng Bậc]</b><br>    ${degreeItems.join('<br>')}</div>
-                ${routeText ? `<div class="path-display" style="margin-top: 10px;"><b>Đường đi:</b> ${routeText}</div>` : ''}
+                <div class="degree-list"><b>[Bảng Bậc]</b><br>     ${degreeItems.join('<br>')}</div>
+                ${routeText ? `<div class="path-display" style="margin-top: 10px;"><b>Đường đi cuối cùng:</b> ${routeText}</div>` : ''}
             `;
 
             if (data.status === 'Success') {
@@ -830,10 +842,10 @@
                 }
 
                 mode = 'ready';
-                document.getElementById('status-label').innerText =    'SẴN SÀNG'   ;
+                document.getElementById('status-label').innerText =  'SẴN SÀNG' ;
                 document.getElementById('next-step').disabled = false;
 
-                document.getElementById('res-container').innerHTML = `<div style="color: #f39c12; font-size: 14px; font-weight: bold;"><i class="fas fa-spinner fa-spin"></i> Đang chạy thuật toán...</div><div style="color: #cbd5e1; font-size: 12px; margin-top: 5px;">Kết luận sẽ hiển thị sau khi hoàn thành.</div>`;
+                document.getElementById('res-container').innerHTML = `<div style="color: #f39c12; font-size: 14px; font-weight: bold;"><i class="fas fa-spinner fa-spin"></i> Đang chạy thuật toán...</div><div style="color: #cbd5e1; font-size: 13px; margin-top: 5px;">Kết luận sẽ hiển thị sau khi hoàn thành.</div>`;
 
                 initializeSimulation(edges, startNode, info, isDirected, typeText, finalConclusionHTML);
             } else {
@@ -869,9 +881,8 @@
                     usedEdges: new Set()
                 };
 
-                document.getElementById('stack-view').innerHTML = "";
+                document.getElementById('stack-view').innerHTML = simulationState.st.map(n => `<div class="stack-item">${n}</div>`).join('');
                 document.getElementById('ce-path').innerText = "CE = [ ]";
-                document.getElementById('final-path').innerText = "Chờ quá trình đảo ngược CE...";
                 cy.edges().removeClass('highlight').removeClass('current').removeClass('visited');
 
                 document.getElementById('next-step').disabled = false;
@@ -890,14 +901,12 @@
             let { adj, st, CE, directed, usedEdges } = simulationState;
             let stackUI = document.getElementById('stack-view');
             let ceUI = document.getElementById('ce-path');
-            let finalUI = document.getElementById('final-path');
 
             if (st.length > 0) {
                 let u = st[st.length - 1];
                 cy.nodes().removeClass('current-node');
                 const currentNode = cy.getElementById(u.toString());
                 if (currentNode && currentNode.length > 0) currentNode.addClass('current-node');
-                stackUI.innerHTML = st.slice(-10).map(n => `<div class="stack-item">${n}</div>`).join('');
 
                 if (simulationState.currentEdge) {
                     simulationState.currentEdge.removeClass('current').addClass('visited');
@@ -936,10 +945,11 @@
                     ceUI.innerText = "CE = [ " + CE.join(", ") + " ]";
                     updateStepDetail(u, null, st, CE, simulationState.details, directed, simulationState.eulerType);
                 }
+
+                stackUI.innerHTML = st.map(n => `<div class="stack-item">${n}</div>`).join('');
+
             } else {
                 stackUI.innerHTML = "";
-                let realPath = [...CE].reverse();
-                finalUI.innerText = realPath.join(   ' → '   );
                 document.getElementById('next-step').disabled = true;
 
                 if (isAutoSlow) {
@@ -993,6 +1003,113 @@
             cy.getElementById(startNodeSelected.toString()).addClass('selected-start');
             document.getElementById('res-container').innerHTML = `<div style="color: #f39c12; font-size: 14px; font-weight: bold;"><i class="fas fa-spinner fa-spin"></i> Đang reset thuật toán...</div>`;
             runEulerAndInitialize(startNodeSelected);
+        }
+
+        /* HÀM MỚI: XỬ LÝ NÚT "KIỂM TRA ĐỒ THỊ" BẤM PHÁT HIỆN KẾT QUẢ LUÔN */
+        async function checkGraphInstant() {
+            const edges = cy.edges().map(e => [parseInt(e.data('source')), parseInt(e.data('target'))]);
+            if (edges.length === 0) return alert("Vẽ đồ thị trước nhé!");
+
+            document.getElementById('res-container').innerHTML = `<div style="color: #f39c12; font-size: 14px; font-weight: bold;"><i class="fas fa-spinner fa-spin"></i> Đang kiểm tra...</div>`;
+
+            let data;
+            try {
+                const response = await fetch('http://127.0.0.1:18080/solve', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ edges, graphType, startNode: startNodeSelected || -1 })
+                });
+                data = await response.json();
+            } catch (e) {
+                data = solveEulerLocal(edges, graphType, startNodeSelected || -1);
+            }
+
+            let degreeItems = [];
+            let routeText = "";
+            const info = data.details || {};
+            const isDirected = data.graphType === 'directed' || graphType === 'directed';
+
+            for (let id in info) {
+                const nodeInfo = info[id] || {};
+                if (isDirected) {
+                    degreeItems.push(`Đỉnh ${id}: in=${nodeInfo.in || 0}, out=${nodeInfo.out || 0}`);
+                } else {
+                    degreeItems.push(`Đỉnh ${id}        : Bậc         ${nodeInfo.deg || 0}`);
+                }
+            }
+
+            if (data.route && data.route.length) routeText = data.route.join(' → ');
+
+            let normalizedType = "NotEuler";
+            if (data.status === "Success") {
+                let rawType = String(data.type || "").toLowerCase().trim();
+                if (rawType.includes("cycle") || rawType.includes("chu trình") || rawType.includes("chu trinh")) {
+                    normalizedType = "EulerCycle";
+                } else if (rawType.includes("path") || rawType.includes("đường đi") || rawType.includes("duong di")) {
+                    normalizedType = "EulerPath";
+                } else {
+                    let oddC = 0, inOut1 = 0, outIn1 = 0;
+                    for (let id in info) {
+                        if (isDirected) {
+                            if (info[id].out === info[id].in + 1) outIn1++;
+                            else if (info[id].in === info[id].out + 1) inOut1++;
+                        } else {
+                            if ((info[id].deg || 0) % 2 !== 0) oddC++;
+                        }
+                    }
+                    if (isDirected) {
+                        normalizedType = (outIn1 === 0 && inOut1 === 0) ? "EulerCycle" : "EulerPath";
+                    } else {
+                        normalizedType = (oddC === 0) ? "EulerCycle" : "EulerPath";
+                    }
+                }
+            }
+
+            let typeText = "Không phải đồ thị Euler";
+            let explanation = "";
+            let titleColor = data.status === "Success" ? "var(--primary)" : "#e74c3c";
+
+            if (data.status === "Fail") {
+                if (isDirected) {
+                    explanation = `<div style="color: #e74c3c; margin-top: 5px;"><b>Lý do:</b> ${!data.connected ? 'Đồ thị không liên thông.' : 'Không có chu trình/đường đi Euler vì tồn tại đỉnh vi phạm điều kiện bậc (in-degree ≠ out-degree hoặc chênh lệch không hợp lệ).'}</div>`;
+                } else {
+                    explanation = `<div style="color: #e74c3c; margin-top: 5px;"><b>Lý do:</b> ${!data.connected ? 'Đồ thị không liên thông.' : 'Không có chu trình/đường đi Euler vì số lượng đỉnh bậc lẻ không phải là 0 hoặc 2.'}</div>`;
+                }
+            } else if (normalizedType === "EulerCycle") {
+                typeText = isDirected ? "Đồ thị Euler Có Hướng" : "Đồ thị Euler";
+                explanation = `<div style="color: #2ecc71; margin-top: 5px;"><b>Chi tiết:</b> Chứa <u>Chu trình Euler</u>.<br><b>Lý do:</b> ${isDirected ? 'Đồ thị liên thông và mọi đỉnh đều có bậc vào (in) bằng bậc ra (out).' : 'Đồ thị liên thông và tất cả các đỉnh đều có bậc chẵn.'}</div>`;
+            } else if (normalizedType === "EulerPath") {
+                typeText = isDirected ? "Nửa đồ thị Euler Có Hướng" : "Nửa đồ thị Euler";
+                explanation = `<div style="color: var(--secondary); margin-top: 5px;"><b>Chi tiết:</b> Chứa <u>Đường đi Euler</u> (Không có chu trình).<br><b>Lý do:</b> ${isDirected ? 'Đồ thị liên thông, có đúng 1 đỉnh (out = in + 1), 1 đỉnh (in = out + 1), các đỉnh còn lại in = out.' : 'Đồ thị liên thông và có đúng 2 đỉnh bậc lẻ.'}</div>`;
+            }
+
+            const finalConclusionHTML = `
+                <div style="font-weight: bold; font-size: 16px; color: ${titleColor};">${typeText}</div>
+                ${explanation}
+                <div class="degree-list"><b>[Bảng Bậc]</b><br>     ${degreeItems.join('<br>')}</div>
+                ${routeText ? `<div class="path-display" style="margin-top: 10px;"><b>Đường đi cuối cùng:</b> ${routeText}</div>` : ''}
+            `;
+
+            document.getElementById('res-container').innerHTML = finalConclusionHTML;
+            
+            if (data.status === 'Success') {
+                document.getElementById('ce-path').innerText = "Đã hoàn tất kiểm tra!";
+                document.getElementById('stack-view').innerHTML = "";
+                setStateDetail(`<div style="color: var(--success); font-weight: bold; font-size: 16px;">Đã quét nhanh toàn bộ đồ thị! Kết quả được hiển thị ở bảng phía trên.</div>`);
+            } else {
+                document.getElementById('ce-path').innerText = "CE = [ ]";
+                setStateDetail(`<div style="color: #e74c3c; font-weight: bold; font-size: 16px;">Đồ thị không thỏa mãn điều kiện Euler.</div>`);
+            }
+
+            if (simulationState) {
+                clearInterval(simulationState.autoTimer);
+                simulationState = null;
+                document.getElementById('next-step').disabled = true;
+                document.getElementById('auto-slow').innerHTML = '<i class="fas fa-play-circle"></i> Auto Slow';
+                isAutoSlow = false;
+                cy.edges().removeClass('highlight').removeClass('current').removeClass('visited');
+                cy.nodes().removeClass('current-node');
+            }
         }
     </script>
 </body>
