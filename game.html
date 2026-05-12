@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Island Adventure 🌴 - One Stroke Euler</title>
+    <title>Đại Hải Trình 🌴 - 100 Levels Euler Circuit</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.21.1/cytoscape.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -28,24 +28,27 @@
     <audio id="sfx-error" src=""></audio>
 
     <div id="game-sidebar">
-        <div class="logo">🏝️ ĐẠI HẢI TRÌNH</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div class="logo">🏝️ ĐẠI HẢI TRÌNH</div>
+            <button id="theme-toggle" class="btn btn-nav" onclick="toggleTheme()" style="padding: 8px;"><i class="fas fa-sun"></i></button>
+        </div>
 
         <div class="panel">
             <div class="panel-title" style="display: flex; justify-content: space-between;">
-                <span>MỤC TIÊU LEVEL <span id="level-display">1</span></span>
+                <span> LEVEL <span id="level-display">1</span> / 100</span>
                 <span id="level-type-badge" class="badge">EASY</span>
             </div>
             <div class="panel-content" style="min-height: 60px;">
                 <div id="euler-type-info"
-                    style="color: #fde047; font-weight: 900; margin-bottom: 12px; font-size: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+                    style="color: var(--primary); font-weight: 900; margin-bottom: 12px; font-size: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                    🎯 CHU TRÌNH EULER
                 </div>
-                <div id="level-desc" style="color: #cbd5e1; font-size: 14px;">Đang nạp màn chơi...</div>
+                <div id="level-desc" style="color: var(--text-muted); font-size: 14px;">Đang nạp màn chơi...</div>
             </div>
 
             <div class="nav-buttons" style="margin-top: 15px; display: flex; gap: 5px;">
                 <button class="btn btn-nav" onclick="prevLevel()"><i class="fas fa-chevron-left"></i></button>
-                <button class="btn btn-nav" style="flex:1" onclick="generateRandomMap()"><i class="fas fa-dice"></i>
-                    Random</button>
+                <button class="btn btn-nav" style="flex:1" onclick="generateRandomMap()"><i class="fas fa-dice"></i> Random Mode</button>
                 <button class="btn btn-nav" onclick="nextLevel()"><i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
@@ -53,21 +56,24 @@
         <div class="panel">
             <div class="panel-title">TIẾN ĐỘ KHÁM PHÁ</div>
             <div class="stat-row">
-                <span>Hải trình:</span>
-                <span id="edge-progress" style="color: #00e5ff; font-weight: bold; font-size: 18px;">0 / 0</span>
+                <span> Hải trình đã qua: </span>
+                <span id="edge-progress" style="color: var(--primary); font-weight: bold; font-size: 18px;">0 / 0</span>
             </div>
             <div class="stat-row">
-                <span>Vị trí hiện tại:</span>
-                <span id="current-island" style="color: #fde047; font-weight: bold;">Chưa nhổ neo</span>
+                <span> Đảo xuất phát: </span>
+                <span id="start-island" style="color: #fde047; font-weight: bold;"> Chưa chọn </span>
+            </div>
+            <div class="stat-row">
+                <span> Vị trí hiện tại: </span>
+                <span id="current-island" style="color: #2ecc71; font-weight: bold;"> Chưa nhổ neo </span>
             </div>
         </div>
 
-        <button class="btn btn-hint" onclick="showHint()"><i class="fas fa-magic"></i> Gợi ý Lộ trình</button>
+        <button class="btn btn-hint" onclick="showHint()"><i class="fas fa-magic"></i> Gợi ý Lộ trình (Fleury)</button>
         <button class="btn btn-reset" onclick="resetLevel()"><i class="fas fa-redo-alt"></i> Chơi lại Level này</button>
 
         <div style="flex-grow: 1;"></div>
-        <button class="btn btn-back" onclick="window.location.href='index.html'"><i class="fas fa-arrow-left"></i> Về
-            Phần Mềm PTIT</button>
+        <button class="btn btn-back" onclick="window.location.href='index.html'"><i class="fas fa-arrow-left"></i> Về Phần Mềm PTIT</button>
     </div>
 
     <div id="game-main">
@@ -75,35 +81,57 @@
         <canvas id="edges-canvas"></canvas>
         <div id="cy-game"></div>
         <canvas id="boat-canvas"></canvas>
-        <canvas id="confetti-canvas"
-            style="position: absolute; top:0; left:0; width:100%; height:100%; z-index: 100; pointer-events: none;"></canvas>
+        <canvas id="confetti-canvas" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index: 100; pointer-events: none;"></canvas>
+    </div>
+
+    <div id="data-sidebar">
+        <div class="panel" style="height: 100%; display: flex; flex-direction: column;">
+            <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <span style="font-size: 15px;">📊 DỮ LIỆU ĐỒ THỊ REALTIME</span>
+                <button class="btn btn-nav" onclick="copyData()" style="padding: 6px 12px; font-size: 12px;" title="Copy Dữ Liệu"><i class="fas fa-copy"></i></button>
+            </div>
+            
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="openTab(event, 'tab-adj-list')">DS KỀ</button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-edge-list')">DS CẠNH</button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-matrix')">MA TRẬN</button>
+            </div>
+            
+            <div id="tab-adj-list" class="tab-content active"></div>
+            <div id="tab-edge-list" class="tab-content"></div>
+            <div id="tab-matrix" class="tab-content"></div>
+
+            <div style="margin-top: 15px; font-size: 12px; color: var(--text-muted); text-align: center; border-top: 1px solid var(--border-color); padding-top: 10px;">
+                * Dữ liệu tự động cập nhật khi cạnh bị xóa khỏi bản đồ.
+            </div>
+        </div>
     </div>
 
     <div id="game-modal" class="modal-overlay" style="display: none;">
         <div class="modal-content victory-bounce">
             <div class="modal-icon" id="modal-icon">🏆</div>
             <h2 id="modal-title" class="victory-text">Tiêu đề</h2>
-            <p id="modal-desc">Nội dung chi tiết</p>
-            <button id="modal-btn" class="btn btn-action"
-                style="width: 100%; margin-top: 15px; font-size: 18px; padding: 15px;">Tiếp tục</button>
-            <button id="modal-btn-alt" class="btn btn-reset" style="width: 100%; margin-top: 10px; display:none;">Chơi
-                lại</button>
+            <p id="modal-desc"> Nội dung chi tiết </p>
+            <button id="modal-btn" class="btn btn-action" style="width: 100%; margin-top: 15px; font-size: 18px; padding: 15px;"> Tiếp tục </button>
+            <button id="modal-btn-alt" class="btn btn-reset" style="width: 100%; margin-top: 10px; display:none;"> Chơi lại </button>
         </div>
     </div>
 
     <div id="start-overlay" class="modal-overlay" style="z-index: 2000;">
-        <div class="modal-content"
-            style="background: rgba(15, 23, 42, 0.95); border: 2px solid #00e5ff; box-shadow: 0 0 50px rgba(0, 229, 255, 0.6);">
+        <div class="modal-content" style="background: var(--sidebar-bg); border: 2px solid var(--primary); box-shadow: 0 0 50px rgba(0, 229, 255, 0.6);">
             <div class="modal-icon" style="font-size: 90px; margin-bottom: 20px;">⛵</div>
-            <h2 style="color: #00e5ff; font-size: 32px;">SẴN SÀNG RA KHƠI</h2>
-            <p style="font-size: 18px;">Click vào màn hình để Bật hệ thống Nhạc Nền, Sóng Biển và nạp bản đồ!</p>
-            <button class="btn btn-action"
-                style="width: 100%; font-size: 20px; padding: 18px; text-transform: uppercase; font-weight: 900;"
-                onclick="startGame()">BẮT ĐẦU CHƠI</button>
+            <h2 style="color: var(--primary); font-size: 32px;"> ĐẠI HẢI TRÌNH EULER </h2>
+            <p style="font-size: 16px; color: var(--text-muted);">
+                <b>Luật chơi:</b><br>
+                1. Đi qua <b>tất cả</b> các tuyến đường biển đúng 1 lần.<br>
+                2. Cạnh đã đi sẽ <b>biến mất</b>.<br>
+                3. Phải quay trở về đúng <b>Đảo Xuất Phát</b> để chiến thắng.<br><br>
+                Click để Bật hệ thống Nhạc Nền, Sóng Biển và nạp bản đồ!
+            </p>
+            <button class="btn btn-action" style="width: 100%; font-size: 20px; padding: 18px; text-transform: uppercase; font-weight: 900;" onclick="startGame()">BẮT ĐẦU CHƠI</button>
         </div>
     </div>
 
     <script src="game.js"></script>
 </body>
-
 </html>

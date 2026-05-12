@@ -1,25 +1,131 @@
 // ==========================================
-// 1. DATA & 10 LEVELS SYSTEM
+// 1. TẠO 100 LEVEL CHU TRÌNH EULER ĐỘC NHẤT & SẮP XẾP DẦN ĐỘ KHÓ
 // ==========================================
-const levels = [
-    { level: 1, type: 'EASY', desc: "Khởi động nhẹ nhàng! Khám phá toàn bộ bản đồ mà không đi lùi.", nodes: 4, edges: [[1, 2], [2, 3], [3, 4], [4, 1]] },
-    { level: 2, type: 'EASY', desc: "Ngôi sao biển. Tất cả các đảo đều liên kết hoàn hảo.", nodes: 5, edges: [[1, 2], [2, 3], [3, 4], [4, 5], [5, 1], [1, 3], [3, 5], [5, 2], [2, 4], [4, 1]] },
-    { level: 3, type: 'EASY', desc: "Lục giác ma thuật. Hãy quan sát kỹ trước khi xuất phát.", nodes: 6, edges: [[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 1], [1, 3], [3, 5], [5, 1], [2, 4], [4, 6], [6, 2]] },
-    { level: 4, type: 'MEDIUM', desc: "Khó hơn một chút! Phải chọn đúng điểm nhổ neo để không bị kẹt.", nodes: 4, edges: [[1, 2], [2, 3], [3, 4], [4, 1], [1, 3]] },
-    { level: 5, type: 'MEDIUM', desc: "Hải trình dài hơn. Dùng nút 'Gợi ý' nếu la bàn mất phương hướng.", nodes: 5, edges: [[1, 2], [2, 3], [3, 4], [4, 5], [5, 1], [1, 4], [2, 5]] },
-    { level: 6, type: 'MEDIUM', desc: "Cẩn thận ngõ cụt! Tránh phá hủy những eo biển duy nhất nếu chưa thực sự cần thiết.", nodes: 6, edges: [[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 1], [1, 4], [2, 5], [3, 6]] },
-    { level: 7, type: 'HARD', desc: "Mạng lưới nhện. Rất dễ chìm tàu nếu đi sai một bước.", nodes: 6, edges: [[1, 2], [2, 3], [3, 4], [4, 1], [1, 5], [5, 2], [2, 6], [6, 3], [3, 5], [5, 6], [6, 4], [4, 5]] },
-    { level: 8, type: 'HARD', desc: "Mê cung song sinh. Hãy kiên nhẫn tìm đường đi hợp lý nhất.", nodes: 7, edges: [[1, 2], [2, 3], [3, 4], [4, 1], [1, 5], [5, 6], [6, 7], [7, 1], [2, 5], [3, 6], [4, 7]] },
-    { level: 9, type: 'HARD', desc: "Thử thách trước Mắt Bão! Chỉ những thuyền trưởng tài ba nhất mới qua được.", nodes: 8, edges: [[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 1], [1, 5], [2, 6], [3, 7], [4, 8]] },
-    { level: 10, type: 'TRAP', desc: "Lời đồn nói rằng cụm đảo này là một cái bẫy không lối thoát...", nodes: 5, edges: [[1, 2], [2, 3], [3, 4], [4, 5], [1, 3], [3, 5], [2, 4], [4, 1]] }
-];
+const levels = [];
+const usedSignatures = new Set(); // Bộ nhớ để kiểm tra trùng lặp
 
-let currentLevelIdx = 0; let cyGame = null; let currentNode = null;
+// Sinh thủ công các level ngẫu nhiên cho đến khi đủ 100 màn chơi khác biệt
+for (let i = 1; i <= 100; i++) {
+    // Tăng chậm số lượng đỉnh hơn so với phiên bản cũ
+    let baseNodes = 4 + Math.floor((i - 1) / 10); 
+    // Càng lên cao, số chu trình nhỏ (triangle, square) càng thêm vào nhiều để rối mắt
+    let extraCyclesTarget = Math.floor((i - 1) / 15) + 1; 
+
+    let success = false;
+    let attempts = 0;
+
+    while (!success && attempts < 1000) {
+        attempts++;
+        let adj = Array.from({length: baseNodes + 1}, () => new Set());
+        let edgesList = [];
+        
+        // Mẹo xáo trộn đỉnh: Tạo đường cắt chéo thay vì chỉ nối vòng tròn
+        let nodes = [];
+        for(let n=1; n<=baseNodes; n++) nodes.push(n);
+        for(let k=nodes.length-1; k>0; k--){
+            let j = Math.floor(Math.random()*(k+1));
+            [nodes[k], nodes[j]] = [nodes[j], nodes[k]];
+        }
+
+        // Vòng cơ sở (Hamiltonian) để đảm bảo liên thông
+        for (let j = 0; j < baseNodes; j++) {
+            let u = nodes[j], v = nodes[(j + 1) % baseNodes];
+            adj[u].add(v); adj[v].add(u);
+            edgesList.push([u, v]);
+        }
+
+        // Sinh thêm các chu trình nhỏ lồng vào để tăng độ khó (vẫn giữ bậc chẵn)
+        let extraCycles = extraCyclesTarget + Math.floor(Math.random() * 2);
+        for (let k = 0; k < extraCycles; k++) {
+            let cycleLen = (baseNodes >= 4 && Math.random() > 0.5) ? 4 : 3;
+            let tempNodes = [...nodes];
+            for(let x=tempNodes.length-1; x>0; x--){
+                let y = Math.floor(Math.random()*(x+1));
+                [tempNodes[x], tempNodes[y]] = [tempNodes[y], tempNodes[x]];
+            }
+            let subCycle = tempNodes.slice(0, cycleLen);
+            
+            // Kiểm tra xem đã có cạnh trùng chưa (không cho phép đa đồ thị)
+            let validCycle = true;
+            for(let c=0; c<cycleLen; c++){
+                let u = subCycle[c], v = subCycle[(c+1)%cycleLen];
+                if(adj[u].has(v)) { validCycle = false; break; }
+            }
+            
+            if(validCycle) {
+                for(let c=0; c<cycleLen; c++){
+                    let u = subCycle[c], v = subCycle[(c+1)%cycleLen];
+                    adj[u].add(v); adj[v].add(u);
+                    edgesList.push([u, v]);
+                }
+            }
+        }
+
+        // Tạo chữ ký đồ thị (Signature) để chống trùng lặp
+        let sigEdges = edgesList.map(e => {
+            let minE = Math.min(e[0], e[1]), maxE = Math.max(e[0], e[1]);
+            return `${minE}-${maxE}`;
+        });
+        sigEdges.sort();
+        let signature = sigEdges.join('|');
+
+        // Nếu chữ ký này chưa từng xuất hiện => Chấp nhận level này
+        if (!usedSignatures.has(signature)) {
+            usedSignatures.add(signature);
+            levels.push({
+                nodes: baseNodes,
+                edges: edgesList,
+                edgeCount: edgesList.length
+            });
+            success = true;
+        }
+    }
+}
+
+// Bước Sắp xếp (Sorting) tối thượng: Đỉnh ít lên trước, Cạnh ít lên trước
+levels.sort((a, b) => {
+    if(a.nodes !== b.nodes) return a.nodes - b.nodes;
+    return a.edgeCount - b.edgeCount;
+});
+
+// Gắn lại ID và Nhãn độ khó THEO YÊU CẦU MỚI (Chỉ 1-5 là Easy)
+levels.forEach((lvl, idx) => {
+    lvl.level = idx + 1;
+    if (lvl.level <= 5) lvl.type = "EASY";
+    else if (lvl.level <= 45) lvl.type = "MEDIUM";
+    else if (lvl.level <= 85) lvl.type = "HARD";
+    else lvl.type = "EXTREME";
+    
+    lvl.desc = `Hải trình cấp độ ${lvl.level}. Nhiệm vụ: Khám phá ${lvl.edges.length} tuyến đường biển mà không đi trùng lặp.`;
+});
+
+let currentLevelIdx = 0; let cyGame = null; 
+let startNodeId = null; let currentNode = null;
 let visitedEdgesCount = 0; let totalEdges = 0; let isAnimating = false;
 let edgeHintTimeout = null;
 
 // ==========================================
-// 2. ASSET LOADER
+// 2. THEME & UI TOGGLE
+// ==========================================
+function toggleTheme() {
+    document.body.classList.toggle('light-mode');
+    const btn = document.getElementById('theme-toggle');
+    if (document.body.classList.contains('light-mode')) {
+        btn.innerHTML = '<i class="fas fa-moon"></i>';
+    } else {
+        btn.innerHTML = '<i class="fas fa-sun"></i>';
+    }
+}
+
+function openTab(evt, tabName) {
+    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+    evt.currentTarget.classList.add('active');
+}
+
+// ==========================================
+// 3. ASSET LOADER
 // ==========================================
 const islandSprites = [];
 let boatSprite = null;
@@ -35,7 +141,7 @@ function loadAssets(callback) {
 }
 
 // ==========================================
-// 3. HYBRID AUDIO SYSTEM (SÓNG BIỂN + MP3)
+// 4. HYBRID AUDIO SYSTEM
 // ==========================================
 let audioCtx = null;
 let oceanGain = null;
@@ -45,7 +151,6 @@ function initSynth() {
     if (audioCtx.state === 'suspended') audioCtx.resume();
 }
 
-// Hàm khởi tạo tiếng Sóng Biển (Chạy nền liên tục)
 function startOceanSound() {
     if (!audioCtx) return;
     const bufferSize = audioCtx.sampleRate * 2;
@@ -71,7 +176,7 @@ function startOceanSound() {
     lfo.start();
 
     oceanGain = audioCtx.createGain();
-    oceanGain.gain.value = 0.35; // Sóng to
+    oceanGain.gain.value = 0.35; 
 
     oceanNode.connect(filter); filter.connect(oceanGain); oceanGain.connect(audioCtx.destination);
     oceanNode.start();
@@ -89,7 +194,7 @@ function playSynth(type, freq, duration, vol) {
 }
 
 function playWinSynth() {
-    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98]; // C major arpeggio
+    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98]; 
     notes.forEach((f, i) => setTimeout(() => playSynth('square', f, 0.4, 0.3), i * 120));
 }
 
@@ -105,21 +210,17 @@ const Audio = {
             playSynth(synthType, synthFreq, synthDur, synthVol);
         }
     },
-
     hover: () => Audio.playSafe('sfx-hover', 'sine', 600, 0.1, 0.05),
-    move: () => Audio.playSafe('sfx-move', 'sawtooth', 150, 0.5, 0.2), // Tiếng thuyền chạy
+    move: () => Audio.playSafe('sfx-move', 'sawtooth', 150, 0.5, 0.2), 
     error: () => Audio.playSafe('sfx-error', 'sawtooth', 120, 0.5, 0.4),
-
     win: () => {
         initSynth();
         const bgm = document.getElementById('bgm-audio');
-        if (bgm) bgm.pause(); // Tạm tắt nhạc nền
-
+        if (bgm) bgm.pause(); 
         if (oceanGain && audioCtx) {
             oceanGain.gain.cancelScheduledValues(audioCtx.currentTime);
-            oceanGain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.5); // Hạ tiếng sóng
+            oceanGain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.5); 
         }
-
         const winEl = document.getElementById('sfx-win');
         if (winEl && winEl.getAttribute('src') && winEl.getAttribute('src').trim() !== '') {
             winEl.currentTime = 0; winEl.volume = 1.0;
@@ -134,22 +235,17 @@ const Audio = {
 function startGame() {
     document.getElementById('start-overlay').style.display = 'none';
     initSynth();
-
-    // Khởi động lại SÓNG BIỂN
     startOceanSound();
-
-    // Khởi động lại NHẠC NỀN
     const bgm = document.getElementById('bgm-audio');
     if (bgm && bgm.getAttribute('src') && bgm.getAttribute('src').trim() !== '') {
         bgm.volume = 0.4;
         bgm.play().catch(e => console.log("BGM Error:", e));
     }
-
     loadAssets(() => { initGame(); });
 }
 
 // ==========================================
-// 4. ANIMATED EDGES (SÓNG NƯỚC CANVAS)
+// 5. ANIMATED EDGES & WATER BACKGROUND
 // ==========================================
 const edgesCanvas = document.getElementById('edges-canvas');
 const eCtx = edgesCanvas.getContext('2d');
@@ -158,10 +254,16 @@ let waterTime = 0;
 function renderEnv() {
     waterTime += 0.01;
     const wCtx = document.getElementById('water-bg').getContext('2d');
+    
+    const style = getComputedStyle(document.body);
+    const c1 = style.getPropertyValue('--water-grad-1').trim() || '#0077b6';
+    const c2 = style.getPropertyValue('--water-grad-2').trim() || '#023e8a';
+
     const grd = wCtx.createRadialGradient(edgesCanvas.width / 2, edgesCanvas.height / 2, 0, edgesCanvas.width / 2, edgesCanvas.height / 2, edgesCanvas.width);
-    grd.addColorStop(0, '#0077b6'); grd.addColorStop(1, '#023e8a');
+    grd.addColorStop(0, c1); grd.addColorStop(1, c2);
     wCtx.fillStyle = grd; wCtx.fillRect(0, 0, edgesCanvas.width, edgesCanvas.height);
-    wCtx.fillStyle = 'rgba(0, 180, 216, 0.05)';
+    
+    wCtx.fillStyle = 'rgba(0, 180, 216, 0.08)';
     for (let j = 0; j < 3; j++) {
         wCtx.beginPath(); wCtx.moveTo(0, edgesCanvas.height);
         for (let i = 0; i <= edgesCanvas.width; i += 40) wCtx.lineTo(i, edgesCanvas.height * (0.3 + j * 0.2) + Math.sin(i * 0.01 + waterTime + j) * 30);
@@ -173,24 +275,23 @@ function renderEnv() {
         cyGame.edges().forEach(edge => {
             const source = edge.source().renderedPosition(); const target = edge.target().renderedPosition();
             if (!source || !target) return;
-            const isVisited = edge.hasClass('visited-edge'); const isHint = edge.hasClass('hint-edge');
+            const isHint = edge.hasClass('hint-edge');
 
             const dx = target.x - source.x; const dy = target.y - source.y;
             const dist = Math.hypot(dx, dy); const angle = Math.atan2(dy, dx);
 
             eCtx.save(); eCtx.translate(source.x, source.y); eCtx.rotate(angle); eCtx.beginPath(); eCtx.moveTo(0, 0);
 
-            const amplitude = isVisited ? 0 : 5; const speed = waterTime * 4;
+            const amplitude = 5; const speed = waterTime * 4;
             for (let i = 0; i <= dist; i += 5) eCtx.lineTo(i, Math.sin(i * 0.05 - speed) * amplitude);
 
-            if (isHint && !isVisited) {
+            if (isHint) {
                 let alpha = (Math.sin(waterTime * 10) + 1) / 2 + 0.2;
                 eCtx.shadowBlur = 25; eCtx.shadowColor = `rgba(253, 224, 71, ${alpha})`;
                 eCtx.lineWidth = 8; eCtx.strokeStyle = `rgba(250, 204, 21, ${alpha})`;
-            } else if (isVisited) {
-                eCtx.shadowBlur = 20; eCtx.shadowColor = '#00e5ff'; eCtx.lineWidth = 10; eCtx.strokeStyle = '#00e5ff';
             } else {
-                eCtx.setLineDash([15, 15]); eCtx.shadowBlur = 0; eCtx.lineWidth = 5; eCtx.strokeStyle = 'rgba(0, 180, 216, 0.5)';
+                eCtx.setLineDash([15, 15]); eCtx.shadowBlur = 0; eCtx.lineWidth = 5; 
+                eCtx.strokeStyle = document.body.classList.contains('light-mode') ? 'rgba(2, 132, 199, 0.6)' : 'rgba(0, 229, 255, 0.5)';
             }
             eCtx.stroke(); eCtx.restore();
         });
@@ -199,7 +300,7 @@ function renderEnv() {
 }
 
 // ==========================================
-// 5. BOAT PHYSICS 
+// 6. BOAT PHYSICS
 // ==========================================
 class BoatAnimator {
     constructor() {
@@ -207,7 +308,6 @@ class BoatAnimator {
         this.x = 0; this.y = 0; this.targetX = 0; this.targetY = 0;
         this.ripples = []; this.animId = null;
     }
-
     animateTravel(x1, y1, x2, y2, callback) {
         this.x = x1; this.y = y1; this.targetX = x2; this.targetY = y2;
         this.startTime = performance.now(); this.duration = 700;
@@ -215,7 +315,6 @@ class BoatAnimator {
         if (this.animId) cancelAnimationFrame(this.animId);
         this.loop();
     }
-
     loop() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         const p = Math.min((performance.now() - this.startTime) / this.duration, 1);
@@ -242,7 +341,7 @@ class BoatAnimator {
             this.ctx.save(); this.ctx.translate(this.x, this.y); this.ctx.rotate(angle + Math.PI / 2);
             let bob = Math.sin(performance.now() / 80) * 4; this.ctx.translate(0, bob);
             this.ctx.shadowBlur = 25; this.ctx.shadowColor = 'rgba(0,0,0,0.6)';
-            const bSize = 140;
+            const bSize = 120; 
             this.ctx.imageSmoothingEnabled = true; this.ctx.imageSmoothingQuality = 'high';
             this.ctx.drawImage(boatSprite, -bSize / 2, -bSize / 2, bSize, bSize);
             this.ctx.restore();
@@ -259,7 +358,7 @@ class BoatAnimator {
 const animator = new BoatAnimator();
 
 // ==========================================
-// 6. CYTOSCAPE (HỆ QUẢN TRỊ ĐẢO)
+// 7. CYTOSCAPE ENGINE
 // ==========================================
 function initGame() {
     window.addEventListener('resize', () => {
@@ -281,16 +380,17 @@ function initGame() {
                     'shape': 'rectangle', 'background-opacity': 0, 'border-width': 0,
                     'background-image': (ele) => islandSprites[(parseInt(ele.id()) - 1) % islandSprites.length],
                     'background-fit': 'contain',
-                    'width': 240, 'height': 240,
+                    'width': 180, 'height': 180,
                     'transition-property': 'width, height, shadow-blur', 'transition-duration': '0.2s',
-                    'label': 'data(id)', 'color': 'white', 'text-valign': 'top', 'text-margin-y': -35,
-                    'font-family': 'Nunito', 'font-size': '48px', 'font-weight': '900',
-                    'text-outline-color': '#000', 'text-outline-width': 8
+                    'label': 'data(id)', 'color': 'white', 'text-valign': 'top', 'text-margin-y': -20,
+                    'font-family': 'Nunito', 'font-size': '36px', 'font-weight': '900',
+                    'text-outline-color': '#000', 'text-outline-width': 6
                 }
             },
             { selector: 'edge', style: { 'opacity': 0 } },
-            { selector: '.current-node', style: { 'width': 270, 'height': 270, 'shadow-blur': 60, 'shadow-color': '#fde047' } },
-            { selector: '.hint-node', style: { 'width': 260, 'height': 260, 'shadow-blur': 50, 'shadow-color': '#ff00ff' } }
+            { selector: '.current-node', style: { 'width': 220, 'height': 220, 'shadow-blur': 60, 'shadow-color': '#00e5ff' } },
+            { selector: '.start-node', style: { 'width': 200, 'height': 200, 'shadow-blur': 40, 'shadow-color': '#fde047' } },
+            { selector: '.hint-node', style: { 'width': 210, 'height': 210, 'shadow-blur': 50, 'shadow-color': '#ff00ff' } }
         ],
         userZoomingEnabled: false, userPanningEnabled: false, boxSelectionEnabled: false
     });
@@ -298,10 +398,16 @@ function initGame() {
     cyGame.on('tap', 'node', handleNodeClick);
     cyGame.on('mouseover', 'node', (e) => {
         if (!isAnimating && !e.target.hasClass('current-node')) {
-            Audio.hover(); document.body.style.cursor = 'pointer'; e.target.style({ 'width': 260, 'height': 260 });
+            Audio.hover(); 
+            document.body.style.cursor = 'pointer'; 
+            // Hiệu ứng rê chuột: Phình to thêm một chút dựa trên kích thước gốc
+            let baseW = e.target.width(); let baseH = e.target.height();
+            e.target.style({ 'width': baseW + 20, 'height': baseH + 20 });
         }
     });
     cyGame.on('mouseout', 'node', (e) => { document.body.style.cursor = 'default'; e.target.removeStyle('width'); e.target.removeStyle('height'); });
+
+    cyGame.on('remove', updateDataTabs);
 
     loadLevel(currentLevelIdx);
 }
@@ -309,28 +415,24 @@ function initGame() {
 function loadLevel(idx) {
     if (idx < 0) idx = 0;
     if (idx >= levels.length) {
-        showModal("🏆 HUYỀN THOẠI BIỂN KHƠI", "Bạn đã phá đảo toàn bộ 10 Level! Vô cùng xuất sắc!", () => { window.location.href = 'index.html'; }); return;
+        showModal("🏆 HUYỀN THOẠI BIỂN KHƠI", "Bạn đã phá đảo toàn bộ 100 Level! Bạn chính là Vua Hải Tặc!", () => { window.location.href = 'index.html'; });
+        return;
     }
     currentLevelIdx = idx; const lvlData = levels[idx];
     document.getElementById('level-display').innerText = lvlData.level;
     document.getElementById('level-type-badge').innerText = lvlData.type;
-    document.getElementById('level-type-badge').style.background = lvlData.type === 'EASY' ? '#22c55e' : (lvlData.type === 'MEDIUM' ? '#f59e0b' : '#ef4444');
-
-    let degrees = {};
-    lvlData.edges.forEach(e => { degrees[e[0]] = (degrees[e[0]] || 0) + 1; degrees[e[1]] = (degrees[e[1]] || 0) + 1; });
-    let oddCount = Object.values(degrees).filter(d => d % 2 !== 0).length;
-
-    let eulerInfo = document.getElementById('euler-type-info');
-    if (oddCount === 0) { eulerInfo.innerHTML = "🎯 CHU TRÌNH EULER<br><span style='font-size:12px; color:#a5b4fc; font-weight:normal;'>Bắt đầu ở đảo bất kỳ.</span>"; }
-    else if (oddCount === 2) { eulerInfo.innerHTML = "🎯 ĐƯỜNG ĐI EULER<br><span style='font-size:12px; color:#a5b4fc; font-weight:normal;'>BẮT BUỘC bắt đầu từ đảo có số đường lẻ.</span>"; }
-    else { eulerInfo.innerHTML = "💀 VÙNG BIỂN CHẾT<br><span style='font-size:12px; color:#fca5a5; font-weight:normal;'>Bản đồ này KHÔNG THỂ vẽ 1 nét! Tự lượng sức mình...</span>"; }
+    
+    let badgeColor = '#22c55e'; // EASY
+    if(lvlData.type === 'MEDIUM') badgeColor = '#f59e0b';
+    if(lvlData.type === 'HARD') badgeColor = '#ef4444';
+    if(lvlData.type === 'EXTREME') badgeColor = '#000000';
+    document.getElementById('level-type-badge').style.background = badgeColor;
 
     document.getElementById('level-desc').innerText = lvlData.desc;
 
-    currentNode = null; visitedEdgesCount = 0; totalEdges = lvlData.edges.length; updateStats();
-    clearHints(); stopConfetti();
+    startNodeId = null; currentNode = null; visitedEdgesCount = 0; totalEdges = lvlData.edges.length; 
+    updateStats(); clearHints(); stopConfetti();
 
-    // Khôi phục nhạc nền và sóng biển nếu trước đó vừa Win
     const bgm = document.getElementById('bgm-audio');
     if (bgm && bgm.paused) bgm.play().catch(e => e);
     if (oceanGain && audioCtx) {
@@ -342,7 +444,21 @@ function loadLevel(idx) {
     for (let i = 1; i <= lvlData.nodes; i++) cyGame.add({ group: 'nodes', data: { id: i.toString() } });
     lvlData.edges.forEach((edge, i) => { cyGame.add({ group: 'edges', data: { id: 'e' + i, source: edge[0].toString(), target: edge[1].toString() } }); });
 
-    cyGame.layout({ name: 'circle', padding: 60 }).run();
+    // ĐÃ FIX: Giảm padding (từ 80 xuống 50) để khung đồ thị phình to ra, các đỉnh tản ra xa nhau hơn
+    cyGame.layout({ name: 'circle', padding: 50 }).run();
+
+    // ĐÃ FIX: Nâng mức giới hạn node tối thiểu lên 140 để đảm bảo đỉnh luộn to và dễ bấm
+    let dynamicSize = lvlData.nodes > 12 ? 140 : (lvlData.nodes > 8 ? 160 : 180);
+    
+    cyGame.style()
+        .selector('node').style({'width': dynamicSize, 'height': dynamicSize})
+        // Cập nhật luôn kích thước các trạng thái để phù hợp với tỷ lệ to/nhỏ của màn chơi
+        .selector('.current-node').style({'width': dynamicSize + 40, 'height': dynamicSize + 40})
+        .selector('.start-node').style({'width': dynamicSize + 20, 'height': dynamicSize + 20})
+        .selector('.hint-node').style({'width': dynamicSize + 30, 'height': dynamicSize + 30})
+        .update();
+
+    updateDataTabs();
 }
 
 function nextLevel() { loadLevel(currentLevelIdx + 1); }
@@ -350,22 +466,8 @@ function prevLevel() { loadLevel(currentLevelIdx - 1); }
 function resetLevel() { loadLevel(currentLevelIdx); }
 
 function generateRandomMap() {
-    let N = Math.floor(Math.random() * 4) + 4;
-    let edges = [];
-    for (let i = 1; i <= N; i++) edges.push([i, (i % N) + 1]);
-    let extra = Math.floor(N / 2);
-    for (let k = 0; k < extra; k++) {
-        let u = Math.floor(Math.random() * N) + 1; let v = Math.floor(Math.random() * N) + 1;
-        if (u !== v) edges.push([u, v]);
-    }
-    let isTrap = Math.random() < 0.1; if (isTrap) edges.splice(0, 2);
-
-    levels.push({
-        level: "RAND", type: isTrap ? 'TRAP' : 'RANDOM',
-        desc: "Bản đồ ngẫu nhiên! Phía trước là vinh quang hay là hố sâu tử thần?",
-        nodes: N, edges: edges
-    });
-    loadLevel(levels.length - 1);
+    let randIdx = Math.floor(Math.random() * levels.length);
+    loadLevel(randIdx);
 }
 
 function handleNodeClick(evt) {
@@ -374,70 +476,136 @@ function handleNodeClick(evt) {
     const node = evt.target;
 
     if (!currentNode) {
-        if (node.connectedEdges().length % 2 === 0 && cyGame.nodes().filter(n => n.connectedEdges().length % 2 !== 0).length === 2) {
-            triggerError(node); showModal("🚫 Sai điểm xuất phát!", "Bản đồ này là Đường đi Euler! Bắt buộc phải nhổ neo từ hòn đảo có số đường kết nối là số LẺ."); return;
-        }
-        currentNode = node; node.addClass('current-node');
-        updateStats(); Audio.hover(); return;
+        startNodeId = node.id();
+        currentNode = node; 
+        node.addClass('current-node');
+        node.addClass('start-node');
+        updateStats(); Audio.hover(); 
+        return;
     }
 
-    const edgesBetween = currentNode.edgesWith(node).filter(e => !e.hasClass('visited-edge'));
+    const edgesBetween = currentNode.edgesWith(node);
 
     if (edgesBetween.length > 0) {
         const edgeToTraverse = edgesBetween[0];
         const p1 = currentNode.renderedPosition(); const p2 = node.renderedPosition();
 
         animator.animateTravel(p1.x, p1.y, p2.x, p2.y, () => {
-            edgeToTraverse.addClass('visited-edge');
+            cyGame.remove(edgeToTraverse); 
             currentNode.removeClass('current-node');
             currentNode = node; currentNode.addClass('current-node');
-            visitedEdgesCount++; updateStats(); checkWinLoseCondition();
+            
+            visitedEdgesCount++; 
+            updateStats(); 
+            checkWinLoseCondition();
         });
-    } else { triggerError(node); }
+    } else { triggerError(); }
 }
 
-function triggerError(node) {
+function triggerError() {
     Audio.error();
     const main = document.getElementById('game-main');
     main.classList.remove('shake-screen'); void main.offsetWidth; main.classList.add('shake-screen');
 }
 
 function checkWinLoseCondition() {
-    const isLevelTypeTrap = levels[currentLevelIdx].type === 'TRAP';
-    const isGraphUnsolvable = cyGame.nodes().filter(n => n.connectedEdges().length % 2 !== 0).length > 2;
-
     if (visitedEdgesCount === totalEdges) {
-        Audio.win();
-        fireConfetti();
-
-        if (isGraphUnsolvable) {
-            document.getElementById('modal-icon').innerText = '🤯';
-            showModal("HACKER?!", "Về mặt lý thuyết, đảo này không thể giải được! Phép thuật nào vậy??", () => { closeModal(); nextLevel(); }, "Chơi Level Kế");
+        if (currentNode.id() === startNodeId) {
+            Audio.win();
+            fireConfetti();
+            document.getElementById('modal-icon').innerText = '🌟';
+            showModal("CHIẾN THẮNG!", `Quá đỉnh! Bạn đã vượt qua màn ${levels[currentLevelIdx].level} thành công.`, () => { closeModal(); nextLevel(); }, "LEVEL TIẾP THEO");
         } else {
-            document.getElementById('modal-icon').innerText = isLevelTypeTrap ? '🏆' : '🌟';
-            showModal(isLevelTypeTrap ? "PHÁ BẪY THÀNH CÔNG!" : "CHIẾN THẮNG!", `Quá đỉnh! Bạn đã vượt qua thử thách và thắp sáng ${totalEdges} eo biển.`, () => { closeModal(); nextLevel(); }, "LEVEL TIẾP THEO");
+            Audio.error();
+            document.getElementById('modal-icon').innerText = '☠️';
+            showModal("THẤT BẠI", "Bạn đã đi hết biển nhưng KHÔNG thể trở về đảo xuất phát!", () => { closeModal(); resetLevel(); }, "Chơi Lại", true);
         }
         return;
     }
 
-    const availableEdges = currentNode.connectedEdges().filter(e => !e.hasClass('visited-edge'));
+    const availableEdges = currentNode.connectedEdges();
     if (availableEdges.length === 0) {
-        Audio.error(); document.getElementById('modal-icon').innerText = '☠️';
-        if (isLevelTypeTrap || isGraphUnsolvable) {
-            showModal("BẪY TỬ THẦN!", "Đúng như lời đồn, đây là một cái bẫy! Hải trình của bạn đã kết thúc.", () => { closeModal(); resetLevel(); }, "Thử lại", true);
-        } else {
-            showModal("MẮC KẸT!", "Thuyền của bạn đã đi vào ngõ cụt. Hãy tính toán lại hải trình!", () => { closeModal(); resetLevel(); }, "Làm Lại", true);
-        }
+        Audio.error(); document.getElementById('modal-icon').innerText = '⚓';
+        showModal("MẮC KẸT!", "Thuyền của bạn đã đi vào ngõ cụt. Vẫn còn tuyến đường chưa khám phá!", () => { closeModal(); resetLevel(); }, "Làm Lại", true);
     }
 }
 
 function updateStats() {
     document.getElementById('edge-progress').innerText = `${visitedEdgesCount} / ${totalEdges}`;
+    document.getElementById('start-island').innerText = startNodeId ? `Đảo số ${startNodeId}` : "Chưa chọn";
     document.getElementById('current-island').innerText = currentNode ? `Đảo số ${currentNode.id()}` : "Chưa nhổ neo";
 }
 
 // ==========================================
-// 7. GỢI Ý THÔNG MINH (FLEURY)
+// 8. DATA TABS & SIDEBAR LOGIC
+// ==========================================
+function updateDataTabs() {
+    if(!cyGame) return;
+    const nodes = cyGame.nodes().map(n => parseInt(n.id())).sort((a,b) => a - b);
+    const edges = cyGame.edges();
+    
+    if (nodes.length === 0) return;
+
+    let matrixHTML = `<table class="data-table"><thead><tr><th></th>`;
+    nodes.forEach(n => matrixHTML += `<th>${n}</th>`);
+    matrixHTML += `</tr></thead><tbody>`;
+    nodes.forEach(u => {
+        matrixHTML += `<tr><th>${u}</th>`;
+        nodes.forEach(v => {
+            let hasEdge = edges.filter(e => 
+                (parseInt(e.source().id()) === u && parseInt(e.target().id()) === v) || 
+                (parseInt(e.source().id()) === v && parseInt(e.target().id()) === u)
+            ).length > 0;
+            matrixHTML += `<td style="${hasEdge ? 'font-weight: bold; color: var(--primary);' : 'color: var(--text-muted); opacity: 0.3;'}">${hasEdge ? "1" : "0"}</td>`;
+        });
+        matrixHTML += `</tr>`;
+    });
+    matrixHTML += `</tbody></table>`;
+    document.getElementById('tab-matrix').innerHTML = matrixHTML;
+
+    let edgesHTML = `<table class="data-table"><thead><tr><th>Đỉnh đầu</th><th>Đỉnh cuối</th></tr></thead><tbody>`;
+    if (edges.length === 0) {
+        edgesHTML += `<tr><td colspan="2" style="color: var(--text-muted)">Không còn cạnh nào</td></tr>`;
+    } else {
+        edges.forEach(e => {
+            edgesHTML += `<tr><td>${e.source().id()}</td><td>${e.target().id()}</td></tr>`;
+        });
+    }
+    edgesHTML += `</tbody></table>`;
+    document.getElementById('tab-edge-list').innerHTML = edgesHTML;
+
+    let adjHTML = `<table class="data-table"><thead><tr><th>Đỉnh</th><th>Các đỉnh kề (Chưa đi)</th></tr></thead><tbody>`;
+    nodes.forEach(u => {
+        let neighbors = [];
+        edges.forEach(e => {
+            if (parseInt(e.source().id()) === u) neighbors.push(parseInt(e.target().id()));
+            if (parseInt(e.target().id()) === u) neighbors.push(parseInt(e.source().id()));
+        });
+        let uniqueNeighbors = [...new Set(neighbors)].sort((a,b) => a - b).join(", ");
+        adjHTML += `<tr><td><b>${u}</b></td><td style="${uniqueNeighbors ? 'color: var(--primary);' : 'color: var(--text-muted);'}">${uniqueNeighbors || "-"}</td></tr>`;
+    });
+    adjHTML += `</tbody></table>`;
+    document.getElementById('tab-adj-list').innerHTML = adjHTML;
+}
+
+function copyData() {
+    const activeTab = document.querySelector('.tab-content.active');
+    if(!activeTab) return;
+    
+    let text = "";
+    activeTab.querySelectorAll('tr').forEach(row => {
+        let rowData = [];
+        row.querySelectorAll('th, td').forEach(cell => rowData.push(cell.innerText));
+        text += rowData.join("\t") + "\n";
+    });
+    
+    navigator.clipboard.writeText(text).then(() => {
+        alert("Đã copy dữ liệu vào Clipboard!");
+    });
+}
+
+// ==========================================
+// 9. GỢI Ý THÔNG MINH (FLEURY)
 // ==========================================
 function clearHints() {
     cyGame.nodes().removeClass('hint-node'); cyGame.edges().removeClass('hint-edge');
@@ -448,16 +616,9 @@ function showHint() {
     clearHints();
 
     if (!currentNode) {
-        let hasOdd = false;
-        cyGame.nodes().forEach(n => { if (n.connectedEdges().length % 2 !== 0) { n.addClass('hint-node'); hasOdd = true; } });
-        if (!hasOdd) cyGame.nodes().addClass('hint-node');
-
-        let oddCount = cyGame.nodes().filter(n => n.connectedEdges().length % 2 !== 0).length;
-        if (oddCount !== 0 && oddCount !== 2) {
-            Audio.error(); showModal("CẢNH BÁO BÃO!", "La bàn chỉ ra vùng biển này KHÔNG THỂ KHÁM PHÁ TRỌN VẸN. Chắc chắn bạn sẽ bị kẹt!");
-        }
+        cyGame.nodes().addClass('hint-node');
     } else {
-        const availableEdges = currentNode.connectedEdges().filter(e => !e.hasClass('visited-edge'));
+        const availableEdges = currentNode.connectedEdges();
         if (availableEdges.length === 0) return;
 
         if (availableEdges.length === 1) { availableEdges[0].addClass('hint-edge'); }
@@ -470,19 +631,19 @@ function showHint() {
 }
 
 function isBridge(edgeToTest) {
-    const allRemainingEdges = cyGame.edges().filter(e => !e.hasClass('visited-edge'));
+    const allRemainingEdges = cyGame.edges();
     if (allRemainingEdges.length === 1) return true;
     const edgesAfterMove = allRemainingEdges.filter(e => e.id() !== edgeToTest.id());
     const startNodeId = edgeToTest.target().id() === currentNode.id() ? edgeToTest.source().id() : edgeToTest.target().id();
 
-    let visitedEdges = new Set(); let queue = [startNodeId]; let reachableEdgesCount = 0;
+    let visitedEdges = new Set(); let queue = [startNodeId];
     while (queue.length > 0) {
         let curr = queue.shift();
         edgesAfterMove.forEach(e => {
             if (!visitedEdges.has(e.id())) {
                 let src = e.source().id(); let tgt = e.target().id();
                 if (src === curr || tgt === curr) {
-                    visitedEdges.add(e.id()); reachableEdgesCount++;
+                    visitedEdges.add(e.id());
                     queue.push(src === curr ? tgt : src);
                 }
             }
@@ -492,7 +653,7 @@ function isBridge(edgeToTest) {
 }
 
 // ==========================================
-// 8. MODAL UI & CONFETTI
+// 10. MODAL UI & CONFETTI
 // ==========================================
 function showModal(title, desc, actionCallback, btnText = "Tiếp tục", showAltBtn = false) {
     document.getElementById('modal-title').innerText = title;

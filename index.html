@@ -8,12 +8,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
+            /* MÀU DARK MODE MẶC ĐỊNH */
             --primary: #00d2ff;
             --secondary: #f39c12;
             --bg: #0f172a;
             --card: #1e293b;
             --text: #f8fafc;
             --success: #2ecc71;
+            --border: #334155;
+            --canvas-bg: #f1f5f9;
+        }
+
+        body.light-mode {
+            /* MÀU LIGHT MODE NỀN SÁNG */
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --border: #cbd5e1;
+            --canvas-bg: #e2e8f0;
         }
 
         body {
@@ -24,17 +36,19 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
+            transition: background 0.3s, color 0.3s;
         }
 
         #toolbar {
             width: 280px;
             background: var(--card);
-            border-right: 1px solid #334155;
+            border-right: 1px solid var(--border);
             padding: 15px;
             display: flex;
             flex-direction: column;
             gap: 8px;
             overflow-y: auto;
+            transition: background 0.3s, border-color 0.3s;
         }
 
         .group-label {
@@ -43,12 +57,24 @@
             color: #64748b;
             margin-top: 10px;
             font-weight: bold;
-            border-bottom: 1px solid #334155;
+            border-bottom: 1px solid var(--border);
             padding-bottom: 3px;
         }
 
+        /* Bố cục chia cột cho các nút */
+        .manual-draw-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+
+        .row-group {
+            display: flex;
+            gap: 5px;
+        }
+
         .matrix-fieldset {
-            border: 1px solid #334155;
+            border: 1px solid var(--border);
             border-radius: 6px;
             padding: 10px;
             margin: 10px 0;
@@ -67,42 +93,40 @@
             margin-top: 5px;
         }
 
-        .btn-matrix.draw-btn {
-            background: #10b981;
+        .btn-matrix {
             color: #fff;
-            margin-top: 0;
+            font-weight: bold;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 11px;
             transition: 0.2s;
         }
-
+        .btn-matrix.draw-btn { background: #10b981; }
         .btn-matrix.draw-btn:hover { background: #059669; }
-
-        .btn-matrix.clear-btn {
-            background: #64748b;
-            color: #fff;
-            margin-top: 0;
-            transition: 0.2s;
-        }
-
+        .btn-matrix.clear-btn { background: #64748b; }
         .btn-matrix.clear-btn:hover { background: #475569; }
 
         .tool-btn {
-            background: #334155;
+            background: var(--border);
             border: none;
             padding: 10px;
             border-radius: 6px;
-            color: white;
+            color: var(--text);
             cursor: pointer;
             text-align: left;
             transition: 0.2s;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             font-size: 12px;
         }
 
         .tool-btn:hover {
-            background: #475569;
-            transform: translateX(3px);
+            filter: brightness(1.2);
+            transform: translateX(2px);
         }
 
         .tool-btn.active {
@@ -112,9 +136,9 @@
         }
 
         #matrix-input {
-            background: #0f172a;
+            background: var(--bg);
             border: 1px solid var(--primary);
-            color: var(--primary);
+            color: var(--text);
             font-family: monospace;
             width: 100%;
             height: 120px;
@@ -126,16 +150,12 @@
             line-height: 1.6;
         }
 
-        .btn-matrix {
-            background: var(--primary);
-            color: #000;
-            font-weight: bold;
-            border: none;
-            padding: 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 11px;
+        input[type="number"] {
+            background: var(--bg);
+            border: 1px solid var(--primary);
+            color: var(--text);
+            padding: 5px;
+            border-radius: 4px;
         }
 
         #main {
@@ -150,9 +170,10 @@
             flex: 1;
             min-width: 0;
             position: relative;
-            background: #f1f5f9;
+            background: var(--canvas-bg);
             border-radius: 16px;
             box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s;
         }
 
         .header-title {
@@ -162,35 +183,119 @@
             margin-bottom: 10px;
         }
 
+        /* GIAO DIỆN PANEL BÊN PHẢI */
         #right-sidebar {
             width: 360px;
             background: var(--card);
-            border-left: 1px solid #334155;
+            border-left: 1px solid var(--border);
             padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        /* HỆ THỐNG 3 TABS BÊN PHẢI */
+        .tabs-header {
+            display: flex;
+            gap: 4px;
+            background: var(--bg);
+            padding: 4px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 8px 0;
+            font-size: 11px;
+            font-weight: bold;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--card);
+            color: var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .tab-content {
+            display: none;
+            font-size: 14px;
+            background: var(--bg);
+            color: var(--text);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            min-height: 250px;
+            max-height: 450px;
+            overflow-y: auto;
+            line-height: 1.5;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* THIẾT KẾ KẺ BẢNG CHUYÊN NGHIỆP CHO DATA TABS */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: center;
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg);
+        }
+        
+        .data-table th, .data-table td {
+            border: 1px solid var(--border);
+            padding: 8px 5px;
+        }
+        
+        .data-table th {
+            background: var(--card);
+            color: var(--primary);
+            font-weight: bold;
+            position: sticky;
+            top: -16px; /* Giữ tiêu đề khi cuộn chuột */
+            box-shadow: 0 1px 0 var(--border);
+            z-index: 10;
+        }
+
+        body.light-mode .data-table th {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(0, 210, 255, 0.05);
         }
 
         .stat-card {
-            background: #0f172a;
+            background: var(--bg);
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 15px;
-            border: 1px solid #334155;
+            border: 1px solid var(--border);
         }
 
         .degree-list {
             max-height: 80px;
             overflow-y: auto;
-            background: #050510;
+            background: rgba(128,128,128,0.1);
             padding: 8px;
             border-radius: 6px;
             margin-top: 8px;
             font-family: monospace;
             font-size: 14px;
-            color: #cbd5e1;
-            border: 1px solid #334155;
+            color: var(--text);
+            border: 1px solid var(--border);
         }
 
         #stack-view {
@@ -200,7 +305,7 @@
             min-height: 100px;
             max-height: 200px;
             overflow-y: auto;
-            border: 2px dashed #334155;
+            border: 2px dashed var(--border);
             padding: 10px;
             border-radius: 8px;
             margin-top: 5px;
@@ -229,66 +334,105 @@
             word-break: break-all;
             line-height: 1.6;
         }
+
+        /* NÚT CHUYỂN CHẾ ĐỘ SÁNG TỐI */
+        #theme-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
+            background: var(--card);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+
+        #theme-toggle:hover {
+            background: var(--primary);
+            color: #000;
+        }
     </style>
 </head>
 
 <body>
+    <button id="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-sun"></i> Chế độ sáng
+    </button>
+
     <div id="toolbar">
         <h2 style="color: var(--primary); margin: 0; font-size: 20px;"><i class="fas fa-project-diagram"></i> PTIT GRAPH</h2>
 
         <fieldset class="matrix-fieldset">
-            <legend class="matrix-legend">  Nhập ma trận kề  </legend>
+            <legend class="matrix-legend"> Nhập ma trận kề </legend>
             <div style="margin-bottom: 10px;">
-                <label style="font-size: 11px; color: #64748b;"><input type="radio" name="graph-type" value="undirected" checked>  Vô hướng  </label>
-                <label style="font-size: 11px; color: #64748b; margin-left: 10px;"><input type="radio" name="graph-type" value="directed">  Có hướng  </label>
+                <label style="font-size: 11px; color: #64748b;"><input type="radio" name="graph-type" value="undirected" checked> Vô hướng </label>
+                <label style="font-size: 11px; color: #64748b; margin-left: 10px;"><input type="radio" name="graph-type" value="directed"> Có hướng </label>
             </div>
-            <textarea id="matrix-input" placeholder= "Nhập ma trận kề (ví dụ):  &#10;0 1 1&#10;1 0 1&#10;1 1 0"></textarea>
+            <textarea id="matrix-input" placeholder="Nhập ma trận kề (ví dụ): &#10;0 1 1&#10;1 0 1&#10;1 1 0"></textarea>
             <div class="matrix-btn-group">
-                <button class="btn-matrix draw-btn" onclick="importMatrix()">  Vẽ từ ma trận  </button>
-                <button class="btn-matrix clear-btn" onclick="clearMatrixInput()">  Xóa ma trận  </button>
+                <button class="btn-matrix draw-btn" onclick="importMatrix()"> Vẽ từ ma trận </button>
+                <button class="btn-matrix clear-btn" onclick="clearMatrixInput()"> Xóa ma trận </button>
             </div>
         </fieldset>
 
-        <div class="group-label">  Vẽ Thủ Công  </div>
-        <button class="tool-btn active" id="mode-node" onclick="setMode('node', this)"><i class="fas fa-plus-circle"></i> Thêm Đỉnh</button>
-        <button class="tool-btn" id="mode-edge" onclick="setMode('edge', this)"><i class="fas fa-link"></i>  Thêm Cạnh  </button>
-        <button class="tool-btn" onclick="setMode('delete-node', this)"><i class="fas fa-trash"></i> Xóa Đỉnh</button>
-        <button class="tool-btn" onclick="setMode('delete-edge', this)"><i class="fas fa-cut"></i>  Xóa Cạnh  </button>
-
-        <div class="group-label">Random Đồ thị (4-20)</div>
-        <div style="display: flex; gap: 5px;">
-            <input type="number" id="rand-count" value="10" min="4" max="20" style="width: 50px; background: #0f172a; border: 1px solid var(--primary); color: white; padding: 5px; border-radius: 4px;">
-            <span style="font-size: 11px; align-self: center;">Nodes</span>
+        <div class="group-label"> Vẽ Thủ Công </div>
+        <div class="manual-draw-group">
+            <button class="tool-btn active" id="mode-node" onclick="setMode('node', this)" style="justify-content: center;"><i class="fas fa-plus"></i> Đỉnh</button>
+            <button class="tool-btn" id="mode-edge" onclick="setMode('edge', this)" style="justify-content: center;"><i class="fas fa-link"></i> Cạnh</button>
+            <button class="tool-btn" onclick="setMode('delete-node', this)" style="justify-content: center;"><i class="fas fa-trash"></i> Xóa Đỉnh</button>
+            <button class="tool-btn" onclick="setMode('delete-edge', this)" style="justify-content: center;"><i class="fas fa-cut"></i> Xóa Cạnh</button>
         </div>
-        <button class="tool-btn" onclick="generateRandom('cycle')"><i class="fas fa-dice"></i> Random Chu Trình Euler</button>
-        <button class="tool-btn" onclick="generateRandom('path')"><i class="fas fa-random"></i> Random Đường Đi Euler</button>
 
-        <div class="group-label">  Vận Hành  </div>
+        <div class="group-label">Random Đồ thị (4-20 Nodes)</div>
+        <div style="display: flex; gap: 5px; margin-bottom: 5px;">
+            <input type="number" id="rand-count" value="10" min="4" max="20" style="width: 100%;">
+        </div>
+        <div class="row-group">
+            <button class="tool-btn" onclick="generateRandom('cycle')" style="flex:1; justify-content: center;"><i class="fas fa-dice"></i> Chu trình</button>
+            <button class="tool-btn" onclick="generateRandom('path')" style="flex:1; justify-content: center;"><i class="fas fa-random"></i> Đường đi</button>
+        </div>
+
+        <div class="group-label"> Vận Hành </div>
         <div style="display: flex; gap: 5px; align-items: center;">
-            <button class="tool-btn btn-run" onclick="selectStartNode()" style="flex: 1;"><i class="fas fa-play"></i> Chọn đỉnh bắt đầu</button>
-            <input type="number" id="start-node-input" placeholder="Nhập số đỉnh" style="width: 120px; background: #0f172a; border: 1px solid var(--primary); color: white; padding: 8px; border-radius: 6px; font-size: 12px;">
+            <button class="tool-btn btn-run" onclick="selectStartNode()" style="flex: 1; background: var(--success); color: #000;"><i class="fas fa-play"></i> Chọn đỉnh bắt đầu</button>
+            <input type="number" id="start-node-input" placeholder="Nhập số đỉnh" style="width: 100px; font-size: 12px;">
         </div>
-        <div style="font-size: 11px; color: #64748b; margin-top: 5px;">Hoặc click vào đỉnh trong đồ thị để chọn.</div>
 
         <button class="tool-btn" onclick="window.location.href='game.html'" style="background: #10b981; color: white; font-weight: bold; border: 1px solid #059669; margin-top: 10px; justify-content: center;"><i class="fas fa-gamepad"></i> MINIGAME ADVENTURE 🌴</button>
-        <button class="tool-btn" style="background: #e11d48;" onclick="location.reload()"><i class="fas fa-undo"></i> CLEAR ALL</button>
+        <button class="tool-btn" style="background: #e11d48; color: white; justify-content: center;" onclick="location.reload()"><i class="fas fa-undo"></i> CLEAR ALL</button>
 
         <div class="group-label">Step-by-Step Control</div>
-        <button class="tool-btn" id="check-graph" onclick="checkGraphInstant()"><i class="fas fa-check-double"></i> Kiểm tra đồ thị</button>
+        <button class="tool-btn" id="check-graph" onclick="checkGraphInstant()"><i class="fas fa-check-double"></i> Kiểm tra nhanh kết quả</button>
         <button class="tool-btn" id="next-step" onclick="nextStep()" disabled><i class="fas fa-step-forward"></i> Next Step</button>
         <button class="tool-btn" id="auto-slow" onclick="toggleAutoSlow()"><i class="fas fa-play-circle"></i> Auto Slow</button>
-        <button class="tool-btn" id="reset-sim" onclick="resetSimulation()"><i class="fas fa-redo"></i> Reset Đồ Thị</button>
+        <button class="tool-btn" id="reset-sim" onclick="resetSimulation()"><i class="fas fa-redo"></i> Reset thuật toán</button>
     </div>
 
     <div id="main">
         <div class="header-title">
-            <span style="font-size: 1.1em; font-weight: bold;">Màn hình: <span id="status-label" style="color: var(--secondary);">  THIẾT KẾ  </span></span>
+            <span style="font-size: 1.1em; font-weight: bold;">Màn hình: <span id="status-label" style="color: var(--secondary);"> THIẾT KẾ </span></span>
         </div>
-        <div id="cy" style="position: relative;"></div>
+        <div id="cy"></div>
     </div>
 
     <div id="right-sidebar">
-        <h3>📊 KẾT LUẬN & LÝ DO</h3>
+        <h3>📚 DỮ LIỆU ĐỒ THỊ</h3>
+        <div class="tabs-header">
+            <button class="tab-btn active" onclick="openTab(event, 'tab-matrix')">MA TRẬN KỀ</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-edges')">DS CẠNH</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-adj')">DS KỀ</button>
+        </div>
+        <div id="tab-matrix" class="tab-content active">Chờ dữ liệu...</div>
+        <div id="tab-edges" class="tab-content">Chờ dữ liệu...</div>
+        <div id="tab-adj" class="tab-content">Chờ dữ liệu...</div>
+
+        <h3 style="margin-top: 15px;">📊 KẾT LUẬN & LÝ DO</h3>
         <div class="stat-card" id="res-container">
             <div style="color: #94a3b8; font-size: 14px;">Đang chờ dữ liệu...</div>
         </div>
@@ -301,7 +445,7 @@
 
         <h3>ℹ️ CHI TIẾT TRẠNG THÁI</h3>
         <div class="stat-card" id="detail-panel">
-            <div id="state-detail" style="font-size: 16px; line-height: 1.6; color: #e2e8f0;">
+            <div id="state-detail" style="font-size: 16px; line-height: 1.6;">
                 Chờ dữ liệu thuật toán... Hãy vẽ đồ thị và CHỌN ĐỈNH BẮT ĐẦU.
             </div>
         </div>
@@ -312,6 +456,84 @@
         let simulationState = null;
         let isAutoSlow = false;
         let startNodeSelected = null;
+
+        // --- CÁC HÀM XỬ LÝ GIAO DIỆN & TABS ---
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const btn = document.getElementById('theme-toggle');
+            if (document.body.classList.contains('light-mode')) {
+                btn.innerHTML = '<i class="fas fa-moon"></i> Chế độ tối';
+            } else {
+                btn.innerHTML = '<i class="fas fa-sun"></i> Chế độ sáng';
+            }
+        }
+
+        function openTab(evt, tabName) {
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        // Tự động cập nhật nội dung 3 Tab (ĐÃ SỬA: KẺ BẢNG & ĐÓNG BĂNG KHI CHẠY)
+        function updateDataTabs() {
+            // NẾU ĐANG CHẠY THUẬT TOÁN (TỨC LÀ MODE = 'ready') THÌ KHÔNG CẬP NHẬT BẢNG NỮA
+            if (mode === 'ready') return;
+
+            const nodes = cy.nodes().map(n => n.id()).sort((a,b) => parseInt(a) - parseInt(b));
+            const edges = cy.edges();
+            
+            if (nodes.length === 0) {
+                const emptyMsg = "<div style='text-align:center; padding: 20px; color: #64748b;'>Đồ thị trống</div>";
+                document.getElementById('tab-matrix').innerHTML = emptyMsg;
+                document.getElementById('tab-edges').innerHTML = emptyMsg;
+                document.getElementById('tab-adj').innerHTML = emptyMsg;
+                return;
+            }
+
+            // 1. Cập nhật Ma trận kề (Bằng Table)
+            let matrixHTML = `<table class="data-table"><thead><tr><th></th>`;
+            nodes.forEach(n => matrixHTML += `<th>${n}</th>`);
+            matrixHTML += `</tr></thead><tbody>`;
+            nodes.forEach(u => {
+                matrixHTML += `<tr><th>${u}</th>`;
+                nodes.forEach(v => {
+                    let hasEdge = edges.filter(e => 
+                        (e.source().id() === u && e.target().id() === v) || 
+                        (graphType === 'undirected' && e.source().id() === v && e.target().id() === u)
+                    ).length > 0;
+                    matrixHTML += `<td>${hasEdge ? "1" : "0"}</td>`;
+                });
+                matrixHTML += `</tr>`;
+            });
+            matrixHTML += `</tbody></table>`;
+            document.getElementById('tab-matrix').innerHTML = matrixHTML;
+
+            // 2. Cập nhật Danh sách cạnh (Bằng Table)
+            let edgesHTML = `<table class="data-table"><thead><tr><th>Đỉnh đầu</th><th>Đỉnh cuối</th></tr></thead><tbody>`;
+            if (edges.length === 0) {
+                edgesHTML += `<tr><td colspan="2">Không có cạnh</td></tr>`;
+            } else {
+                edges.forEach(e => {
+                    edgesHTML += `<tr><td>${e.source().id()}</td><td>${e.target().id()}</td></tr>`;
+                });
+            }
+            edgesHTML += `</tbody></table>`;
+            document.getElementById('tab-edges').innerHTML = edgesHTML;
+
+            // 3. Cập nhật Danh sách kề (Bằng Table)
+            let adjHTML = `<table class="data-table"><thead><tr><th>Đỉnh</th><th>Các đỉnh kề</th></tr></thead><tbody>`;
+            nodes.forEach(u => {
+                let neighbors = edges.filter(e => e.source().id() === u).map(e => e.target().id());
+                if (graphType === 'undirected') {
+                    neighbors = neighbors.concat(edges.filter(e => e.target().id() === u).map(e => e.source().id()));
+                }
+                let uniqueNeighbors = [...new Set(neighbors)].sort((a,b) => parseInt(a) - parseInt(b)).join(", ");
+                adjHTML += `<tr><td><b>${u}</b></td><td>${uniqueNeighbors || "-"}</td></tr>`;
+            });
+            adjHTML += `</tbody></table>`;
+            document.getElementById('tab-adj').innerHTML = adjHTML;
+        }
 
         function clearMatrixInput() {
             document.getElementById('matrix-input').value = '';
@@ -349,7 +571,9 @@
                         'background-color': '#e11d48',
                         'border-color': '#be123c',
                         'border-width': 4,
-                        'color': '#fff'
+                        'color': '#fff',
+                        'width': 65,
+                        'height': 65
                     }
                 },
                 {
@@ -361,11 +585,16 @@
                         'shadow-blur': 25,
                         'shadow-color': '#f59e0b',
                         'shadow-opacity': 1,
-                        'color': '#fff'
+                        'color': '#fff',
+                        'width': 65,
+                        'height': 65
                     }
                 }
             ]
         });
+
+        // Lắng nghe thao tác vẽ trên bản đồ để tự động nhảy nội dung trong 3 TABS
+        cy.on('add remove data', updateDataTabs);
 
         function autoResizeNodes(totalNodes) {
             let newSize = 55; 
@@ -398,6 +627,7 @@
             } else {
                 cy.style().selector('edge').style({ 'target-arrow-shape': 'none' }).update();
             }
+            updateDataTabs();
         }
 
         document.querySelectorAll('input[name="graph-type"]').forEach(radio => {
@@ -418,7 +648,6 @@
                     }
 
                     cy.nodes().removeClass('selected-start');
-
                     startNodeSelected = nodeId;
                     const node = cy.getElementById(nodeId.toString());
                     node.addClass('selected-start');
@@ -432,7 +661,7 @@
             cy.elements().remove();
             startNodeSelected = null;
             mode = 'design';
-            document.getElementById('status-label').innerText =  'THIẾT KẾ' ;
+            document.getElementById('status-label').innerText = 'THIẾT KẾ';
             document.getElementById('next-step').disabled = true;
             setStateDetail('<div>Tạo đồ thị mới. Nhấn "Chọn đỉnh bắt đầu" để bắt đầu thuật toán.</div>');
             let N = parseInt(document.getElementById('rand-count').value);
@@ -472,7 +701,7 @@
             cy.elements().remove();
             startNodeSelected = null;
             mode = 'design';
-            document.getElementById('status-label').innerText =  'THIẾT KẾ' ;
+            document.getElementById('status-label').innerText = 'THIẾT KẾ';
             document.getElementById('next-step').disabled = true;
             setStateDetail('<div>Import đồ thị mới. Nhấn "Chọn đỉnh bắt đầu" để bắt đầu thuật toán.</div>');
             const rows = input.split('\n');
@@ -518,14 +747,15 @@
             const degreeText = renderDegreeSummary(details, isDirected);
 
             setStateDetail(`
-                <div style="color: var(--primary); font-weight: bold; margin-bottom: 12px; font-size: 18px; border-bottom: 2px solid #334155; padding-bottom: 8px;">Loại thuật toán: ${eulerType}</div>
+                <div style="color: var(--primary); font-weight: bold; margin-bottom: 12px; font-size: 18px; border-bottom: 2px solid var(--border); padding-bottom: 8px;">Loại thuật toán: ${eulerType}</div>
                 <div style="font-size: 16px; margin-bottom: 8px;"><b>Đỉnh hiện tại:</b> <span style="background-color: #f59e0b; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 17px;">${currentNode}</span></div>
-                <div style="font-size: 16px; margin-bottom: 8px;"><b>Cạnh đang xét:</b> <span style="color: #2ecc71; font-weight: bold; font-size: 17px;">${edgeText}</span></div>
+                <div style="font-size: 16px; margin-bottom: 8px;"><b>Cạnh đã xóa:</b> <span style="color: #2ecc71; font-weight: bold; font-size: 17px;">${edgeText}</span></div>
                 <div style="margin-top: 8px; font-size: 15px;"><b>Điều kiện:</b> ${isDirected ? 'in-degree và out-degree' : 'bậc của đỉnh'}</div>
-                <div style="margin-top: 10px; font-family: monospace; color: #cbd5e1; font-size: 15px; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; line-height: 1.6;">${degreeText}</div>
+                <div style="margin-top: 10px; font-family: monospace; color: var(--text); font-size: 15px; background: rgba(128,128,128,0.1); padding: 12px; border-radius: 8px; line-height: 1.6;">${degreeText}</div>
             `);
         }
 
+        // --- FULL HÀM THUẬT TOÁN LOCAL ---
         function solveEulerLocal(edges, graphType, reqStartNode) {
             const nodes = new Set();
             edges.forEach(([u, v]) => { nodes.add(u); nodes.add(v); });
@@ -666,7 +896,7 @@
         function setMode(m, btn) {
             mode = m;
             resetResultPanel();
-            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.manual-draw-group .tool-btn').forEach(b => b.classList.remove('active'));
             if (btn) btn.classList.add('active');
             document.getElementById('status-label').innerText = m.toUpperCase();
             if (simulationState) {
@@ -684,9 +914,7 @@
         cy.on('tap', (e) => {
             if (e.target === cy && mode === 'node') {
                 nodeCount++;
-                
                 cy.style().selector('node').style({ 'width': 55, 'height': 55, 'font-size': '18px' }).update();
-
                 cy.add({ group: 'nodes', data: { id: nodeCount.toString() }, position: e.position });
             }
         });
@@ -724,6 +952,7 @@
             }
         });
 
+        // --- FULL LOGIC KẾT NỐI API / BẮT ĐẦU CHẠY ---
         async function runEulerAndInitialize(startNode) {
             const edges = cy.edges().map(e => [parseInt(e.data('source')), parseInt(e.data('target'))]);
             if (edges.length === 0) return alert("Vẽ đồ thị trước nhé!");
@@ -791,28 +1020,16 @@
 
             if (data.status === "Fail") {
                 if (isDirected) {
-                    explanation = `<div style="color: #e74c3c; margin-top: 5px;"><b>Lý do:</b> ${!data.connected ?
-                        'Đồ thị không liên thông.'
-                        : 'Không có chu trình/đường đi Euler vì tồn tại đỉnh vi phạm điều kiện bậc (in-degree ≠ out-degree hoặc chênh lệch không hợp lệ).'}</div>`;
+                    explanation = `<div style="color: #e74c3c; margin-top: 5px;"><b>Lý do:</b> ${!data.connected ? 'Đồ thị không liên thông.' : 'Không có chu trình/đường đi Euler vì tồn tại đỉnh vi phạm điều kiện bậc (in-degree ≠ out-degree hoặc chênh lệch không hợp lệ).'}</div>`;
                 } else {
-                    explanation = `<div style="color: #e74c3c; margin-top: 5px;"><b>Lý do:</b> ${!data.connected ?
-                        'Đồ thị không liên thông.'
-                        : 'Không có chu trình/đường đi Euler vì số lượng đỉnh bậc lẻ không phải là 0 hoặc 2.'}</div>`;
+                    explanation = `<div style="color: #e74c3c; margin-top: 5px;"><b>Lý do:</b> ${!data.connected ? 'Đồ thị không liên thông.' : 'Không có chu trình/đường đi Euler vì số lượng đỉnh bậc lẻ không phải là 0 hoặc 2.'}</div>`;
                 }
             } else if (normalizedType === "EulerCycle") {
                 typeText = isDirected ? "Đồ thị Euler Có Hướng" : "Đồ thị Euler";
-                explanation = `<div style="color: #2ecc71; margin-top: 5px;">
-                    <b>Chi tiết:</b> Chứa <u>Chu trình Euler</u>.<br>
-                    <b>Lý do:</b> ${isDirected ?
-                    'Đồ thị liên thông và mọi đỉnh đều có bậc vào (in) bằng bậc ra (out).'
-                    : 'Đồ thị liên thông và tất cả các đỉnh đều có bậc chẵn.'}</div>`;
+                explanation = `<div style="color: #2ecc71; margin-top: 5px;"><b>Chi tiết:</b> Chứa <u>Chu trình Euler</u>.<br><b>Lý do:</b> ${isDirected ? 'Đồ thị liên thông và mọi đỉnh đều có bậc vào (in) bằng bậc ra (out).' : 'Đồ thị liên thông và tất cả các đỉnh đều có bậc chẵn.'}</div>`;
             } else if (normalizedType === "EulerPath") {
                 typeText = isDirected ? "Nửa đồ thị Euler Có Hướng" : "Nửa đồ thị Euler";
-                explanation = `<div style="color: var(--secondary); margin-top: 5px;">
-                    <b>Chi tiết:</b> Chứa <u>Đường đi Euler</u> (Không có chu trình).<br>
-                    <b>Lý do:</b> ${isDirected ?
-                    'Đồ thị liên thông, có đúng 1 đỉnh (out = in + 1), 1 đỉnh (in = out + 1), các đỉnh còn lại in = out.'
-                    : 'Đồ thị liên thông và có đúng 2 đỉnh bậc lẻ.'}</div>`;
+                explanation = `<div style="color: var(--secondary); margin-top: 5px;"><b>Chi tiết:</b> Chứa <u>Đường đi Euler</u> (Không có chu trình).<br><b>Lý do:</b> ${isDirected ? 'Đồ thị liên thông, có đúng 1 đỉnh (out = in + 1), 1 đỉnh (in = out + 1), các đỉnh còn lại in = out.' : 'Đồ thị liên thông và có đúng 2 đỉnh bậc lẻ.'}</div>`;
             }
 
             const finalConclusionHTML = `
@@ -845,7 +1062,7 @@
                 document.getElementById('status-label').innerText =  'SẴN SÀNG' ;
                 document.getElementById('next-step').disabled = false;
 
-                document.getElementById('res-container').innerHTML = `<div style="color: #f39c12; font-size: 14px; font-weight: bold;"><i class="fas fa-spinner fa-spin"></i> Đang chạy thuật toán...</div><div style="color: #cbd5e1; font-size: 13px; margin-top: 5px;">Kết luận sẽ hiển thị sau khi hoàn thành.</div>`;
+                document.getElementById('res-container').innerHTML = `<div style="color: #f39c12; font-size: 14px; font-weight: bold;"><i class="fas fa-spinner fa-spin"></i> Đang chuẩn bị thuật toán...</div>`;
 
                 initializeSimulation(edges, startNode, info, isDirected, typeText, finalConclusionHTML);
             } else {
@@ -878,7 +1095,8 @@
                     details: details,
                     eulerType: eulerType,
                     finalResultHTML: finalHTML,
-                    usedEdges: new Set()
+                    usedEdges: new Set(),
+                    removedEdges: [] // Lưu các cạnh đã xóa để phục hồi sau này
                 };
 
                 document.getElementById('stack-view').innerHTML = simulationState.st.map(n => `<div class="stack-item">${n}</div>`).join('');
@@ -892,13 +1110,14 @@
             }
         }
 
+        // --- HÀM THAY ĐỔI CỐT LÕI: XÓA CẠNH KHỎI MÀN HÌNH ---
         function nextStep() {
             if (!simulationState) {
                 alert("Chưa chọn đỉnh bắt đầu! Nhấn 'Chọn đỉnh bắt đầu' và chọn một đỉnh trước.");
                 return;
             }
 
-            let { adj, st, CE, directed, usedEdges } = simulationState;
+            let { adj, st, CE, directed, usedEdges, removedEdges } = simulationState;
             let stackUI = document.getElementById('stack-view');
             let ceUI = document.getElementById('ce-path');
 
@@ -908,8 +1127,10 @@
                 const currentNode = cy.getElementById(u.toString());
                 if (currentNode && currentNode.length > 0) currentNode.addClass('current-node');
 
+                // NẾU BƯỚC TRƯỚC CÓ CẠNH, THỰC HIỆN XÓA CẠNH ĐÓ ĐI
                 if (simulationState.currentEdge) {
-                    simulationState.currentEdge.removeClass('current').addClass('visited');
+                    removedEdges.push(simulationState.currentEdge);
+                    cy.remove(simulationState.currentEdge);
                     simulationState.currentEdge = null;
                 }
 
@@ -933,7 +1154,7 @@
                         if (directed) return parseInt(e.data('source')) == u && parseInt(e.data('target')) == v;
                         return (parseInt(e.data('source')) == u && parseInt(e.data('target')) == v) ||
                                (parseInt(e.data('source')) == v && parseInt(e.data('target')) == u);
-                    }).not('.visited').first();
+                    }).first();
 
                     if (simulationState.currentEdge && simulationState.currentEdge.length > 0) {
                         simulationState.currentEdge.addClass('current');
@@ -986,6 +1207,7 @@
             }
         }
 
+        // --- PHỤC HỒI LẠI CÁC CẠNH ĐÃ XÓA KHI BẤM RESET ---
         function resetSimulation() {
             if (!startNodeSelected) {
                 alert("Chưa có đồ thị hoặc bạn chưa chọn đỉnh bắt đầu trước đó!");
@@ -999,17 +1221,40 @@
                 document.getElementById('auto-slow').innerHTML = '<i class="fas fa-play-circle"></i> Auto Slow';
                 isAutoSlow = false;
             }
+            
+            // Khôi phục lại toàn bộ cạnh đã bị xóa trong lúc chạy
+            if (simulationState && simulationState.removedEdges) {
+                simulationState.removedEdges.forEach(e => {
+                    if(e && e.restore) e.restore();
+                });
+            }
+            if (simulationState && simulationState.currentEdge && simulationState.currentEdge.restore) {
+                simulationState.currentEdge.restore();
+            }
+
             cy.elements().removeClass('current-node highlight current visited');
             cy.getElementById(startNodeSelected.toString()).addClass('selected-start');
             document.getElementById('res-container').innerHTML = `<div style="color: #f39c12; font-size: 14px; font-weight: bold;"><i class="fas fa-spinner fa-spin"></i> Đang reset thuật toán...</div>`;
             runEulerAndInitialize(startNodeSelected);
         }
 
-        /* HÀM MỚI: XỬ LÝ NÚT "KIỂM TRA ĐỒ THỊ" BẤM PHÁT HIỆN KẾT QUẢ LUÔN */
+        // --- KIỂM TRA NHANH KẾT QUẢ ---
         async function checkGraphInstant() {
             const edges = cy.edges().map(e => [parseInt(e.data('source')), parseInt(e.data('target'))]);
-            if (edges.length === 0) return alert("Vẽ đồ thị trước nhé!");
+            
+            // Bổ sung: Nếu đang chạy dở mà bấm kiểm tra, khôi phục lại các cạnh đã bị xóa
+            if (simulationState && simulationState.removedEdges) {
+                simulationState.removedEdges.forEach(e => {
+                    if(e && e.restore) e.restore();
+                });
+                edges.push(...simulationState.removedEdges.map(e => [parseInt(e.data('source')), parseInt(e.data('target'))]));
+            }
+            if (simulationState && simulationState.currentEdge) {
+                if(simulationState.currentEdge.restore) simulationState.currentEdge.restore();
+                edges.push([parseInt(simulationState.currentEdge.data('source')), parseInt(simulationState.currentEdge.data('target'))]);
+            }
 
+            if (edges.length === 0) return alert("Vẽ đồ thị trước nhé!");
             document.getElementById('res-container').innerHTML = `<div style="color: #f39c12; font-size: 14px; font-weight: bold;"><i class="fas fa-spinner fa-spin"></i> Đang kiểm tra...</div>`;
 
             let data;
@@ -1107,8 +1352,7 @@
                 document.getElementById('next-step').disabled = true;
                 document.getElementById('auto-slow').innerHTML = '<i class="fas fa-play-circle"></i> Auto Slow';
                 isAutoSlow = false;
-                cy.edges().removeClass('highlight').removeClass('current').removeClass('visited');
-                cy.nodes().removeClass('current-node');
+                cy.elements().removeClass('current-node highlight current visited');
             }
         }
     </script>
