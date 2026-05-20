@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* MÀU DARK MODE MẶC ĐỊNH */
+            
             --primary: #00d2ff;
             --secondary: #f39c12;
             --bg: #0f172a;
@@ -21,7 +21,7 @@
         }
 
         body.light-mode {
-            /* MÀU LIGHT MODE NỀN SÁNG */
+           
             --bg: #f8fafc;
             --card: #ffffff;
             --text: #0f172a;
@@ -40,7 +40,6 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* Nới rộng Toolbar và tăng khoảng cách các thẻ */
         #toolbar {
             width: 320px; 
             background: var(--card);
@@ -215,7 +214,7 @@
 
         /* GIAO DIỆN PANEL BÊN PHẢI */
         #right-sidebar {
-            width: 380px; /* Nới rộng một chút để bảng ma trận không bị bó */
+            width: 380px; 
             background: var(--card);
             border-left: 1px solid var(--border);
             padding: 20px;
@@ -274,7 +273,7 @@
             display: block;
         }
 
-        /* THIẾT KẾ KẺ BẢNG CHUYÊN NGHIỆP CHO DATA TABS */
+       
         .data-table {
             width: 100%;
             border-collapse: collapse;
@@ -490,7 +489,7 @@
         let isAutoSlow = false;
         let startNodeSelected = null;
 
-        // --- CÁC HÀM XỬ LÝ GIAO DIỆN & TABS ---
+        
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             const btn = document.getElementById('theme-toggle');
@@ -508,9 +507,8 @@
             evt.currentTarget.classList.add('active');
         }
 
-        // Tự động cập nhật nội dung 3 Tab (ĐÓNG BĂNG KHI CHẠY)
         function updateDataTabs() {
-            // NẾU ĐANG CHẠY THUẬT TOÁN (TỨC LÀ MODE = 'ready') THÌ KHÔNG CẬP NHẬT BẢNG NỮA
+            
             if (mode === 'ready') return;
 
             const nodes = cy.nodes().map(n => n.id()).sort((a,b) => parseInt(a) - parseInt(b));
@@ -524,7 +522,6 @@
                 return;
             }
 
-            // 1. Cập nhật Ma trận kề (Bằng Table)
             let matrixHTML = `<table class="data-table"><thead><tr><th></th>`;
             nodes.forEach(n => matrixHTML += `<th>${n}</th>`);
             matrixHTML += `</tr></thead><tbody>`;
@@ -542,19 +539,49 @@
             matrixHTML += `</tbody></table>`;
             document.getElementById('tab-matrix').innerHTML = matrixHTML;
 
-            // 2. Cập nhật Danh sách cạnh (Bằng Table)
-            let edgesHTML = `<table class="data-table"><thead><tr><th>Đỉnh đầu</th><th>Đỉnh cuối</th></tr></thead><tbody>`;
+         
+                       let edgesHTML = `<table class="data-table"><thead><tr><th>Đầu</th><th>Cuối</th></tr></thead><tbody>`;
             if (edges.length === 0) {
-                edgesHTML += `<tr><td colspan="2">Không có cạnh</td></tr>`;
+                edgesHTML += `<tr><td colspan="2">Chưa nối cạnh nào</td></tr>`;
             } else {
+                let displayEdges = [];
+                let seenEdges = new Set();
+                
                 edges.forEach(e => {
-                    edgesHTML += `<tr><td>${e.source().id()}</td><td>${e.target().id()}</td></tr>`;
+                    let u = parseInt(e.source().id());
+                    let v = parseInt(e.target().id());
+                    
+                    if (graphType === 'undirected') {
+                        let s = Math.min(u, v);
+                        let t = Math.max(u, v);
+                        let sig = s + "-" + t;
+                        if (!seenEdges.has(sig)) {
+    seenEdges.add(sig);
+
+    displayEdges.push({
+        s: Math.min(u, v),
+        t: Math.max(u, v)
+    });
+}
+                    } else {
+                        let sig = u + "->" + v;
+                        if (!seenEdges.has(sig)) {
+                            seenEdges.add(sig);
+                            displayEdges.push({ s: u, t: v });
+                        }
+                    }
+                });
+
+                displayEdges.sort((a, b) => a.s === b.s ? a.t - b.t : a.s - b.s);
+
+                displayEdges.forEach(e => {
+                    edgesHTML += `<tr><td>${e.s}</td><td>${e.t}</td></tr>`;
                 });
             }
             edgesHTML += `</tbody></table>`;
             document.getElementById('tab-edges').innerHTML = edgesHTML;
 
-            // 3. Cập nhật Danh sách kề (Bằng Table)
+           
             let adjHTML = `<table class="data-table"><thead><tr><th>Đỉnh</th><th>Các đỉnh kề</th></tr></thead><tbody>`;
             nodes.forEach(u => {
                 let neighbors = edges.filter(e => e.source().id() === u).map(e => e.target().id());
@@ -626,7 +653,7 @@
             ]
         });
 
-        // Lắng nghe thao tác vẽ trên bản đồ để tự động nhảy nội dung trong 3 TABS
+        
         cy.on('add remove data', updateDataTabs);
 
         function autoResizeNodes(totalNodes) {
@@ -788,7 +815,7 @@
             `);
         }
 
-        // --- FULL HÀM THUẬT TOÁN LOCAL ---
+       
         function solveEulerLocal(edges, graphType, reqStartNode) {
             const nodes = new Set();
             edges.forEach(([u, v]) => { nodes.add(u); nodes.add(v); });
@@ -952,40 +979,35 @@
             }
         });
 
-        cy.on('tap', 'node', (e) => {
+           cy.on('tap', 'node', (e) => {
             const node = e.target;
-            if (mode === 'delete-node') {
-                cy.remove(node);
-                return;
-            }
+            if (mode === 'delete-node') { cy.remove(node); return; }
             if (mode === 'select-start') {
                 cy.nodes().removeClass('selected-start');
                 startNodeSelected = parseInt(node.id());
                 node.addClass('selected-start');
-                runEulerAndInitialize(startNodeSelected);
-                return;
+                runEulerAndInitialize(startNodeSelected); return;
             }
             if (mode === 'edge') {
-                if (!source) {
-                    source = node;
-                    source.style({'background-color': '#3b82f6', 'border-color': '#2563eb', 'color': '#fff', 'border-width': '4px'});
-                }
+                if (!source) { source = node; source.style({'background-color': '#0ea5e9', 'border-color': '#0284c7', 'color': '#fff'}); }
                 else {
-                    if (source.id() !== node.id()) cy.add({ data: { source: source.id(), target: node.id() } });
-                    source.removeStyle('background-color').removeStyle('border-color').removeStyle('color').removeStyle('border-width');
-                    source = null;
+                    let sId = source.id();
+                    let tId = node.id();
+                    if (sId !== tId) {
+                        let exists = cy.edges().filter(e => {
+                            if (graphType === 'undirected') return (e.source().id() === sId && e.target().id() === tId) || (e.source().id() === tId && e.target().id() === sId);
+                            else return e.source().id() === sId && e.target().id() === tId;
+                        }).length > 0;
+                        if (!exists) cy.add({ data: { source: sId, target: tId } });
+                    }
+                    source.removeStyle('background-color').removeStyle('border-color').removeStyle('color'); source = null;
                 }
             }
         });
 
-        cy.on('tap', 'edge', (e) => {
-            const edge = e.target;
-            if (mode === 'delete-edge') {
-                cy.remove(edge);
-            }
-        });
+        cy.on('tap', 'edge', (e) => { if (mode === 'delete-edge') cy.remove(e.target); });
 
-        // --- FULL LOGIC KẾT NỐI API / BẮT ĐẦU CHẠY ---
+       
         async function runEulerAndInitialize(startNode) {
             const edges = cy.edges().map(e => [parseInt(e.data('source')), parseInt(e.data('target'))]);
             if (edges.length === 0) return alert("Vẽ đồ thị trước nhé!");
@@ -1129,7 +1151,7 @@
                     eulerType: eulerType,
                     finalResultHTML: finalHTML,
                     usedEdges: new Set(),
-                    removedEdges: [] // Lưu các cạnh đã xóa để phục hồi sau này
+                    removedEdges: [] 
                 };
 
                 document.getElementById('stack-view').innerHTML = simulationState.st.map(n => `<div class="stack-item">${n}</div>`).join('');
@@ -1143,7 +1165,6 @@
             }
         }
 
-        // --- HÀM THAY ĐỔI CỐT LÕI: XÓA CẠNH KHỎI MÀN HÌNH ---
         function nextStep() {
             if (!simulationState) {
                 alert("Chưa chọn đỉnh bắt đầu! Nhấn 'Chọn đỉnh bắt đầu' và chọn một đỉnh trước.");
@@ -1160,7 +1181,7 @@
                 const currentNode = cy.getElementById(u.toString());
                 if (currentNode && currentNode.length > 0) currentNode.addClass('current-node');
 
-                // NẾU BƯỚC TRƯỚC CÓ CẠNH, THỰC HIỆN XÓA CẠNH ĐÓ ĐI
+                
                 if (simulationState.currentEdge) {
                     removedEdges.push(simulationState.currentEdge);
                     cy.remove(simulationState.currentEdge);
@@ -1240,7 +1261,7 @@
             }
         }
 
-        // --- PHỤC HỒI LẠI CÁC CẠNH ĐÃ XÓA KHI BẤM RESET ---
+      
         function resetSimulation() {
             if (!startNodeSelected) {
                 alert("Chưa có đồ thị hoặc bạn chưa chọn đỉnh bắt đầu trước đó!");
@@ -1255,7 +1276,7 @@
                 isAutoSlow = false;
             }
             
-            // Khôi phục lại toàn bộ cạnh đã bị xóa trong lúc chạy
+           
             if (simulationState && simulationState.removedEdges) {
                 simulationState.removedEdges.forEach(e => {
                     if(e && e.restore) e.restore();
@@ -1275,7 +1296,7 @@
         async function checkGraphInstant() {
             const edges = cy.edges().map(e => [parseInt(e.data('source')), parseInt(e.data('target'))]);
             
-            // Bổ sung: Nếu đang chạy dở mà bấm kiểm tra, khôi phục lại các cạnh đã bị xóa
+          
             if (simulationState && simulationState.removedEdges) {
                 simulationState.removedEdges.forEach(e => {
                     if(e && e.restore) e.restore();
