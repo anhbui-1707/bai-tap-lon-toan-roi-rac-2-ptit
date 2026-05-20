@@ -317,14 +317,14 @@ int main()
                     res_body["type"] = (!weaklyConnected) ? "Đồ thị không liên thông" : "Không phải Euler";
                 }
 
-                return crow::response(res_body); // ✅ FIX CHÍNH
+                return crow::response(res_body); 
             }
             catch (const std::exception &e)
             {
                 crow::json::wvalue errorRes;
                 errorRes["status"] = "Error";
                 errorRes["message"] = e.what();
-                return crow::response(400, errorRes); // ✅ FIX CHÍNH
+                return crow::response(400, errorRes); 
             }
         });
 

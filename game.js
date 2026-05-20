@@ -1,14 +1,14 @@
 // ==========================================
-// 1. TẠO 100 LEVEL CHU TRÌNH EULER ĐỘC NHẤT & SẮP XẾP DẦN ĐỘ KHÓ
+// 1. TẠO 100 LEVEL CHU TRÌNH EULER  & SẮP XẾP DẦN ĐỘ KHÓ
 // ==========================================
 const levels = [];
-const usedSignatures = new Set(); // Bộ nhớ để kiểm tra trùng lặp
+const usedSignatures = new Set(); 
 
-// Sinh thủ công các level ngẫu nhiên cho đến khi đủ 100 màn chơi khác biệt
+
 for (let i = 1; i <= 100; i++) {
-    // Tăng chậm số lượng đỉnh hơn so với phiên bản cũ
+   
     let baseNodes = 4 + Math.floor((i - 1) / 10); 
-    // Càng lên cao, số chu trình nhỏ (triangle, square) càng thêm vào nhiều để rối mắt
+   
     let extraCyclesTarget = Math.floor((i - 1) / 15) + 1; 
 
     let success = false;
@@ -19,7 +19,7 @@ for (let i = 1; i <= 100; i++) {
         let adj = Array.from({length: baseNodes + 1}, () => new Set());
         let edgesList = [];
         
-        // Mẹo xáo trộn đỉnh: Tạo đường cắt chéo thay vì chỉ nối vòng tròn
+        
         let nodes = [];
         for(let n=1; n<=baseNodes; n++) nodes.push(n);
         for(let k=nodes.length-1; k>0; k--){
@@ -27,14 +27,14 @@ for (let i = 1; i <= 100; i++) {
             [nodes[k], nodes[j]] = [nodes[j], nodes[k]];
         }
 
-        // Vòng cơ sở (Hamiltonian) để đảm bảo liên thông
+        
         for (let j = 0; j < baseNodes; j++) {
             let u = nodes[j], v = nodes[(j + 1) % baseNodes];
             adj[u].add(v); adj[v].add(u);
             edgesList.push([u, v]);
         }
 
-        // Sinh thêm các chu trình nhỏ lồng vào để tăng độ khó (vẫn giữ bậc chẵn)
+       
         let extraCycles = extraCyclesTarget + Math.floor(Math.random() * 2);
         for (let k = 0; k < extraCycles; k++) {
             let cycleLen = (baseNodes >= 4 && Math.random() > 0.5) ? 4 : 3;
@@ -45,7 +45,7 @@ for (let i = 1; i <= 100; i++) {
             }
             let subCycle = tempNodes.slice(0, cycleLen);
             
-            // Kiểm tra xem đã có cạnh trùng chưa (không cho phép đa đồ thị)
+            
             let validCycle = true;
             for(let c=0; c<cycleLen; c++){
                 let u = subCycle[c], v = subCycle[(c+1)%cycleLen];
@@ -61,7 +61,7 @@ for (let i = 1; i <= 100; i++) {
             }
         }
 
-        // Tạo chữ ký đồ thị (Signature) để chống trùng lặp
+        
         let sigEdges = edgesList.map(e => {
             let minE = Math.min(e[0], e[1]), maxE = Math.max(e[0], e[1]);
             return `${minE}-${maxE}`;
@@ -69,7 +69,7 @@ for (let i = 1; i <= 100; i++) {
         sigEdges.sort();
         let signature = sigEdges.join('|');
 
-        // Nếu chữ ký này chưa từng xuất hiện => Chấp nhận level này
+       
         if (!usedSignatures.has(signature)) {
             usedSignatures.add(signature);
             levels.push({
@@ -82,13 +82,13 @@ for (let i = 1; i <= 100; i++) {
     }
 }
 
-// Bước Sắp xếp (Sorting) tối thượng: Đỉnh ít lên trước, Cạnh ít lên trước
+
 levels.sort((a, b) => {
     if(a.nodes !== b.nodes) return a.nodes - b.nodes;
     return a.edgeCount - b.edgeCount;
 });
 
-// Gắn lại ID và Nhãn độ khó THEO YÊU CẦU MỚI (Chỉ 1-5 là Easy)
+
 levels.forEach((lvl, idx) => {
     lvl.level = idx + 1;
     if (lvl.level <= 5) lvl.type = "EASY";
@@ -400,7 +400,7 @@ function initGame() {
         if (!isAnimating && !e.target.hasClass('current-node')) {
             Audio.hover(); 
             document.body.style.cursor = 'pointer'; 
-            // Hiệu ứng rê chuột: Phình to thêm một chút dựa trên kích thước gốc
+           
             let baseW = e.target.width(); let baseH = e.target.height();
             e.target.style({ 'width': baseW + 20, 'height': baseH + 20 });
         }
@@ -422,7 +422,7 @@ function loadLevel(idx) {
     document.getElementById('level-display').innerText = lvlData.level;
     document.getElementById('level-type-badge').innerText = lvlData.type;
     
-    let badgeColor = '#22c55e'; // EASY
+    let badgeColor = '#22c55e'; 
     if(lvlData.type === 'MEDIUM') badgeColor = '#f59e0b';
     if(lvlData.type === 'HARD') badgeColor = '#ef4444';
     if(lvlData.type === 'EXTREME') badgeColor = '#000000';
@@ -444,15 +444,15 @@ function loadLevel(idx) {
     for (let i = 1; i <= lvlData.nodes; i++) cyGame.add({ group: 'nodes', data: { id: i.toString() } });
     lvlData.edges.forEach((edge, i) => { cyGame.add({ group: 'edges', data: { id: 'e' + i, source: edge[0].toString(), target: edge[1].toString() } }); });
 
-    // ĐÃ FIX: Giảm padding (từ 80 xuống 50) để khung đồ thị phình to ra, các đỉnh tản ra xa nhau hơn
+    
     cyGame.layout({ name: 'circle', padding: 50 }).run();
 
-    // ĐÃ FIX: Nâng mức giới hạn node tối thiểu lên 140 để đảm bảo đỉnh luộn to và dễ bấm
+    
     let dynamicSize = lvlData.nodes > 12 ? 140 : (lvlData.nodes > 8 ? 160 : 180);
     
     cyGame.style()
         .selector('node').style({'width': dynamicSize, 'height': dynamicSize})
-        // Cập nhật luôn kích thước các trạng thái để phù hợp với tỷ lệ to/nhỏ của màn chơi
+       
         .selector('.current-node').style({'width': dynamicSize + 40, 'height': dynamicSize + 40})
         .selector('.start-node').style({'width': dynamicSize + 20, 'height': dynamicSize + 20})
         .selector('.hint-node').style({'width': dynamicSize + 30, 'height': dynamicSize + 30})

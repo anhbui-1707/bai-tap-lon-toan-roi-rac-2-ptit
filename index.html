@@ -6,6 +6,7 @@
     <title>PTIT Graph Ultimate - Professional Edition</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.21.1/cytoscape.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             /* MÀU DARK MODE MẶC ĐỊNH */
@@ -30,7 +31,7 @@
 
         body {
             margin: 0;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
             background: var(--bg);
             color: var(--text);
             display: flex;
@@ -39,123 +40,152 @@
             transition: background 0.3s, color 0.3s;
         }
 
+        /* Nới rộng Toolbar và tăng khoảng cách các thẻ */
         #toolbar {
-            width: 280px;
+            width: 320px; 
             background: var(--card);
             border-right: 1px solid var(--border);
-            padding: 15px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 12px;
             overflow-y: auto;
             transition: background 0.3s, border-color 0.3s;
         }
 
+        /* Làm đẹp nhãn các nhóm công cụ */
         .group-label {
-            font-size: 11px;
+            font-size: 12px;
             text-transform: uppercase;
-            color: #64748b;
-            margin-top: 10px;
-            font-weight: bold;
+            color: #94a3b8;
+            margin-top: 15px;
+            margin-bottom: -5px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
             border-bottom: 1px solid var(--border);
-            padding-bottom: 3px;
+            padding-bottom: 6px;
         }
 
-        /* Bố cục chia cột cho các nút */
         .manual-draw-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 5px;
+            gap: 8px;
         }
 
         .row-group {
             display: flex;
-            gap: 5px;
+            gap: 8px;
         }
 
         .matrix-fieldset {
             border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 10px;
-            margin: 10px 0;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 5px 0;
         }
 
         .matrix-legend {
             font-size: 13px;
-            font-weight: bold;
+            font-weight: 700;
             color: var(--primary);
-            padding: 0 5px;
+            padding: 0 8px;
         }
 
         .matrix-btn-group {
             display: flex;
-            gap: 5px;
-            margin-top: 5px;
+            gap: 8px;
+            margin-top: 8px;
         }
 
         .btn-matrix {
             color: #fff;
-            font-weight: bold;
-            border: none;
-            padding: 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 11px;
-            transition: 0.2s;
-        }
-        .btn-matrix.draw-btn { background: #10b981; }
-        .btn-matrix.draw-btn:hover { background: #059669; }
-        .btn-matrix.clear-btn { background: #64748b; }
-        .btn-matrix.clear-btn:hover { background: #475569; }
-
-        .tool-btn {
-            background: var(--border);
+            font-weight: 600;
             border: none;
             padding: 10px;
             border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+            transition: 0.2s;
+        }
+        .btn-matrix.draw-btn { background: #10b981; }
+        .btn-matrix.draw-btn:hover { background: #059669; transform: translateY(-1px); }
+        .btn-matrix.clear-btn { background: #64748b; }
+        .btn-matrix.clear-btn:hover { background: #475569; transform: translateY(-1px); }
+
+        /* Lột xác thiết kế các nút bấm (Buttons) */
+        .tool-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 12px 14px;
+            border-radius: 8px;
             color: var(--text);
             cursor: pointer;
             text-align: left;
-            transition: 0.2s;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 12px;
+            gap: 10px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .tool-btn:hover {
-            filter: brightness(1.2);
-            transform: translateX(2px);
+            filter: brightness(1.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            border-color: var(--primary);
         }
 
         .tool-btn.active {
             background: var(--primary);
-            color: #000;
-            font-weight: bold;
+            color: #0f172a;
+            border-color: var(--primary);
+            box-shadow: 0 0 12px rgba(0, 210, 255, 0.4);
+            font-weight: 700;
         }
 
+        /* Làm đẹp các ô nhập liệu (Inputs & Textarea) */
         #matrix-input {
-            background: var(--bg);
-            border: 1px solid var(--primary);
+            background: rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
             color: var(--text);
             font-family: monospace;
             width: 100%;
             height: 120px;
             resize: vertical;
-            border-radius: 8px;
+            border-radius: 6px;
             padding: 10px;
             box-sizing: border-box;
-            font-size: 12px;
+            font-size: 13px;
             line-height: 1.6;
+            transition: 0.2s;
         }
 
-        input[type="number"] {
+        #matrix-input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 210, 255, 0.2);
+        }
+
+        input[type="number"], input[type="text"] {
             background: var(--bg);
-            border: 1px solid var(--primary);
+            border: 1px solid var(--border);
             color: var(--text);
-            padding: 5px;
-            border-radius: 4px;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 210, 255, 0.2);
         }
 
         #main {
@@ -180,12 +210,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         /* GIAO DIỆN PANEL BÊN PHẢI */
         #right-sidebar {
-            width: 360px;
+            width: 380px; /* Nới rộng một chút để bảng ma trận không bị bó */
             background: var(--card);
             border-left: 1px solid var(--border);
             padding: 20px;
@@ -198,19 +228,20 @@
         /* HỆ THỐNG 3 TABS BÊN PHẢI */
         .tabs-header {
             display: flex;
-            gap: 4px;
+            gap: 6px;
             background: var(--bg);
-            padding: 4px;
-            border-radius: 8px;
-            margin-bottom: 10px;
+            padding: 6px;
+            border-radius: 10px;
+            margin-bottom: 12px;
             border: 1px solid var(--border);
         }
 
         .tab-btn {
             flex: 1;
-            padding: 8px 0;
-            font-size: 11px;
-            font-weight: bold;
+            padding: 10px 0;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
             border: none;
             background: transparent;
             color: #64748b;
@@ -222,7 +253,7 @@
         .tab-btn.active {
             background: var(--card);
             color: var(--primary);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
 
         .tab-content {
@@ -249,21 +280,21 @@
             border-collapse: collapse;
             font-size: 13px;
             text-align: center;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Inter', sans-serif;
             background: var(--bg);
         }
         
         .data-table th, .data-table td {
             border: 1px solid var(--border);
-            padding: 8px 5px;
+            padding: 10px 6px;
         }
         
         .data-table th {
             background: var(--card);
             color: var(--primary);
-            font-weight: bold;
+            font-weight: 700;
             position: sticky;
-            top: -16px; /* Giữ tiêu đề khi cuộn chuột */
+            top: -16px; 
             box-shadow: 0 1px 0 var(--border);
             z-index: 10;
         }
@@ -274,7 +305,7 @@
         }
 
         .data-table tr:hover td {
-            background: rgba(0, 210, 255, 0.05);
+            background: rgba(0, 210, 255, 0.08);
         }
 
         .stat-card {
@@ -289,9 +320,9 @@
             max-height: 80px;
             overflow-y: auto;
             background: rgba(128,128,128,0.1);
-            padding: 8px;
+            padding: 10px;
             border-radius: 6px;
-            margin-top: 8px;
+            margin-top: 10px;
             font-family: monospace;
             font-size: 14px;
             color: var(--text);
@@ -301,12 +332,12 @@
         #stack-view {
             display: flex;
             flex-direction: column-reverse;
-            gap: 5px;
+            gap: 6px;
             min-height: 100px;
             max-height: 200px;
             overflow-y: auto;
             border: 2px dashed var(--border);
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
             margin-top: 5px;
         }
@@ -314,12 +345,13 @@
         .stack-item {
             background: var(--secondary);
             color: #000;
-            font-weight: bold;
+            font-weight: 700;
             text-align: center;
             padding: 8px;
-            border-radius: 4px;
+            border-radius: 6px;
             animation: slideIn 0.3s;
             font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         @keyframes slideIn {
@@ -328,7 +360,7 @@
         }
 
         .path-display {
-            font-family: 'Courier New', monospace;
+            font-family: monospace;
             color: var(--secondary);
             font-size: 16px;
             word-break: break-all;
@@ -344,11 +376,12 @@
             background: var(--card);
             border: 1px solid var(--primary);
             color: var(--primary);
-            padding: 8px 15px;
+            padding: 10px 16px;
             border-radius: 20px;
             cursor: pointer;
             font-size: 13px;
-            font-weight: bold;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             transition: 0.3s;
         }
@@ -366,13 +399,13 @@
     </button>
 
     <div id="toolbar">
-        <h2 style="color: var(--primary); margin: 0; font-size: 20px;"><i class="fas fa-project-diagram"></i> PTIT GRAPH</h2>
+        <h2 style="color: var(--primary); margin: 0; font-size: 22px; font-weight: 800;"><i class="fas fa-project-diagram"></i> PTIT GRAPH</h2>
 
         <fieldset class="matrix-fieldset">
             <legend class="matrix-legend"> Nhập ma trận kề </legend>
-            <div style="margin-bottom: 10px;">
-                <label style="font-size: 11px; color: #64748b;"><input type="radio" name="graph-type" value="undirected" checked> Vô hướng </label>
-                <label style="font-size: 11px; color: #64748b; margin-left: 10px;"><input type="radio" name="graph-type" value="directed"> Có hướng </label>
+            <div style="margin-bottom: 12px; display: flex; gap: 15px;">
+                <label style="font-size: 12px; color: #94a3b8; font-weight: 500;"><input type="radio" name="graph-type" value="undirected" checked> Vô hướng </label>
+                <label style="font-size: 12px; color: #94a3b8; font-weight: 500;"><input type="radio" name="graph-type" value="directed"> Có hướng </label>
             </div>
             <textarea id="matrix-input" placeholder="Nhập ma trận kề (ví dụ): &#10;0 1 1&#10;1 0 1&#10;1 1 0"></textarea>
             <div class="matrix-btn-group">
@@ -390,7 +423,7 @@
         </div>
 
         <div class="group-label">Random Đồ thị (4-20 Nodes)</div>
-        <div style="display: flex; gap: 5px; margin-bottom: 5px;">
+        <div style="display: flex; gap: 5px; margin-bottom: 2px;">
             <input type="number" id="rand-count" value="10" min="4" max="20" style="width: 100%;">
         </div>
         <div class="row-group">
@@ -399,13 +432,13 @@
         </div>
 
         <div class="group-label"> Vận Hành </div>
-        <div style="display: flex; gap: 5px; align-items: center;">
-            <button class="tool-btn btn-run" onclick="selectStartNode()" style="flex: 1; background: var(--success); color: #000;"><i class="fas fa-play"></i> Chọn đỉnh bắt đầu</button>
-            <input type="number" id="start-node-input" placeholder="Nhập số đỉnh" style="width: 100px; font-size: 12px;">
+        <div style="display: flex; gap: 8px; align-items: center;">
+            <button class="tool-btn btn-run" onclick="selectStartNode()" style="flex: 1; background: var(--success); border-color: var(--success); color: #000;"><i class="fas fa-play"></i> Chọn đỉnh xuất phát</button>
+            <input type="number" id="start-node-input" placeholder="Nhập số..." style="width: 100px;">
         </div>
 
-        <button class="tool-btn" onclick="window.location.href='game.html'" style="background: #10b981; color: white; font-weight: bold; border: 1px solid #059669; margin-top: 10px; justify-content: center;"><i class="fas fa-gamepad"></i> MINIGAME ADVENTURE 🌴</button>
-        <button class="tool-btn" style="background: #e11d48; color: white; justify-content: center;" onclick="location.reload()"><i class="fas fa-undo"></i> CLEAR ALL</button>
+        <button class="tool-btn" onclick="window.location.href='game.html'" style="background: #10b981; color: white; font-weight: 700; border: 1px solid #059669; margin-top: 15px; justify-content: center;"><i class="fas fa-gamepad"></i> MINIGAME ADVENTURE 🌴</button>
+        <button class="tool-btn" style="background: #e11d48; color: white; justify-content: center; font-weight: 700;" onclick="location.reload()"><i class="fas fa-undo"></i> CLEAR ALL</button>
 
         <div class="group-label">Step-by-Step Control</div>
         <button class="tool-btn" id="check-graph" onclick="checkGraphInstant()"><i class="fas fa-check-double"></i> Kiểm tra nhanh kết quả</button>
@@ -416,13 +449,13 @@
 
     <div id="main">
         <div class="header-title">
-            <span style="font-size: 1.1em; font-weight: bold;">Màn hình: <span id="status-label" style="color: var(--secondary);"> THIẾT KẾ </span></span>
+            <span style="font-size: 18px; font-weight: 700;">Màn hình: <span id="status-label" style="color: var(--secondary);"> THIẾT KẾ </span></span>
         </div>
         <div id="cy"></div>
     </div>
 
     <div id="right-sidebar">
-        <h3>📚 DỮ LIỆU ĐỒ THỊ</h3>
+        <h3 style="margin-top: 0; font-size: 16px; font-weight: 700;">📚 DỮ LIỆU ĐỒ THỊ</h3>
         <div class="tabs-header">
             <button class="tab-btn active" onclick="openTab(event, 'tab-matrix')">MA TRẬN KỀ</button>
             <button class="tab-btn" onclick="openTab(event, 'tab-edges')">DS CẠNH</button>
@@ -432,20 +465,20 @@
         <div id="tab-edges" class="tab-content">Chờ dữ liệu...</div>
         <div id="tab-adj" class="tab-content">Chờ dữ liệu...</div>
 
-        <h3 style="margin-top: 15px;">📊 KẾT LUẬN & LÝ DO</h3>
+        <h3 style="margin-top: 20px; font-size: 16px; font-weight: 700;">📊 KẾT LUẬN & LÝ DO</h3>
         <div class="stat-card" id="res-container">
             <div style="color: #94a3b8; font-size: 14px;">Đang chờ dữ liệu...</div>
         </div>
 
-        <h3>📚 ALGO STACK (LIFO)</h3>
+        <h3 style="font-size: 16px; font-weight: 700;">📚 ALGO STACK (LIFO)</h3>
         <div id="stack-view"></div>
 
-        <h3>🗂️ MẢNG TẠM CE</h3>
+        <h3 style="font-size: 16px; font-weight: 700;">🗂️ MẢNG TẠM CE</h3>
         <div class="stat-card path-display" id="ce-path">CE = [ ]</div>
 
-        <h3>ℹ️ CHI TIẾT TRẠNG THÁI</h3>
+        <h3 style="font-size: 16px; font-weight: 700;">ℹ️ CHI TIẾT TRẠNG THÁI</h3>
         <div class="stat-card" id="detail-panel">
-            <div id="state-detail" style="font-size: 16px; line-height: 1.6;">
+            <div id="state-detail" style="font-size: 15px; line-height: 1.6;">
                 Chờ dữ liệu thuật toán... Hãy vẽ đồ thị và CHỌN ĐỈNH BẮT ĐẦU.
             </div>
         </div>
@@ -475,7 +508,7 @@
             evt.currentTarget.classList.add('active');
         }
 
-        // Tự động cập nhật nội dung 3 Tab (ĐÃ SỬA: KẺ BẢNG & ĐÓNG BĂNG KHI CHẠY)
+        // Tự động cập nhật nội dung 3 Tab (ĐÓNG BĂNG KHI CHẠY)
         function updateDataTabs() {
             // NẾU ĐANG CHẠY THUẬT TOÁN (TỨC LÀ MODE = 'ready') THÌ KHÔNG CẬP NHẬT BẢNG NỮA
             if (mode === 'ready') return;
@@ -502,7 +535,7 @@
                         (e.source().id() === u && e.target().id() === v) || 
                         (graphType === 'undirected' && e.source().id() === v && e.target().id() === u)
                     ).length > 0;
-                    matrixHTML += `<td>${hasEdge ? "1" : "0"}</td>`;
+                    matrixHTML += `<td style="${hasEdge ? 'font-weight: 800; color: var(--primary);' : 'color: var(--text-muted); opacity: 0.3;'}">${hasEdge ? "1" : "0"}</td>`;
                 });
                 matrixHTML += `</tr>`;
             });
@@ -559,7 +592,7 @@
         const cy = cytoscape({
             container: document.getElementById('cy'),
             style: [
-                { selector: 'node', style: { 'background-color': '#fff', 'border-width': 2, 'border-color': '#00d2ff', 'label': 'data(id)', 'color': '#000', 'text-valign': 'center', 'width': 55, 'height': 55, 'font-weight': 'bold', 'font-size': '18px' } },
+                { selector: 'node', style: { 'background-color': '#fff', 'border-width': 2, 'border-color': '#00d2ff', 'label': 'data(id)', 'color': '#000', 'text-valign': 'center', 'width': 55, 'height': 55, 'font-family': 'Inter', 'font-weight': 'bold', 'font-size': '18px' } },
                 { selector: 'edge', style: { 'width': 3, 'line-color': '#cbd5e1', 'curve-style': 'bezier', 'transition-property': 'line-color, width', 'transition-duration': '0.3s' } },
                 { selector: '.highlight', style: { 'line-color': '#f39c12', 'width': 6 } },
                 { selector: '.current', style: { 'line-color': '#ff6b6b', 'width': 8, 'shadow-blur': 10, 'shadow-color': '#ff6b6b', 'shadow-opacity': 0.6 } },
@@ -663,7 +696,7 @@
             mode = 'design';
             document.getElementById('status-label').innerText = 'THIẾT KẾ';
             document.getElementById('next-step').disabled = true;
-            setStateDetail('<div>Tạo đồ thị mới. Nhấn "Chọn đỉnh bắt đầu" để bắt đầu thuật toán.</div>');
+            setStateDetail('<div>Tạo đồ thị mới. Nhấn "Chọn đỉnh xuất phát" để bắt đầu thuật toán.</div>');
             let N = parseInt(document.getElementById('rand-count').value);
             N = Math.max(4, Math.min(20, N)); nodeCount = N;
             const center = { x: 300, y: 250 };
@@ -703,7 +736,7 @@
             mode = 'design';
             document.getElementById('status-label').innerText = 'THIẾT KẾ';
             document.getElementById('next-step').disabled = true;
-            setStateDetail('<div>Import đồ thị mới. Nhấn "Chọn đỉnh bắt đầu" để bắt đầu thuật toán.</div>');
+            setStateDetail('<div>Import đồ thị mới. Nhấn "Chọn đỉnh xuất phát" để bắt đầu thuật toán.</div>');
             const rows = input.split('\n');
             nodeCount = rows.length;
             
@@ -748,10 +781,10 @@
 
             setStateDetail(`
                 <div style="color: var(--primary); font-weight: bold; margin-bottom: 12px; font-size: 18px; border-bottom: 2px solid var(--border); padding-bottom: 8px;">Loại thuật toán: ${eulerType}</div>
-                <div style="font-size: 16px; margin-bottom: 8px;"><b>Đỉnh hiện tại:</b> <span style="background-color: #f59e0b; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 17px;">${currentNode}</span></div>
-                <div style="font-size: 16px; margin-bottom: 8px;"><b>Cạnh đã xóa:</b> <span style="color: #2ecc71; font-weight: bold; font-size: 17px;">${edgeText}</span></div>
-                <div style="margin-top: 8px; font-size: 15px;"><b>Điều kiện:</b> ${isDirected ? 'in-degree và out-degree' : 'bậc của đỉnh'}</div>
-                <div style="margin-top: 10px; font-family: monospace; color: var(--text); font-size: 15px; background: rgba(128,128,128,0.1); padding: 12px; border-radius: 8px; line-height: 1.6;">${degreeText}</div>
+                <div style="font-size: 15px; margin-bottom: 8px;"><b>Đỉnh hiện tại:</b> <span style="background-color: #f59e0b; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 16px;">${currentNode}</span></div>
+                <div style="font-size: 15px; margin-bottom: 8px;"><b>Cạnh đã xóa:</b> <span style="color: #2ecc71; font-weight: bold; font-size: 16px;">${edgeText}</span></div>
+                <div style="margin-top: 8px; font-size: 14px;"><b>Điều kiện:</b> ${isDirected ? 'in-degree và out-degree' : 'bậc của đỉnh'}</div>
+                <div style="margin-top: 10px; font-family: monospace; color: var(--text); font-size: 14px; background: rgba(128,128,128,0.1); padding: 12px; border-radius: 8px; line-height: 1.6;">${degreeText}</div>
             `);
         }
 
@@ -1340,10 +1373,10 @@
             if (data.status === 'Success') {
                 document.getElementById('ce-path').innerText = "Đã hoàn tất kiểm tra!";
                 document.getElementById('stack-view').innerHTML = "";
-                setStateDetail(`<div style="color: var(--success); font-weight: bold; font-size: 16px;">Đã quét nhanh toàn bộ đồ thị! Kết quả được hiển thị ở bảng phía trên.</div>`);
+                setStateDetail(`<div style="color: var(--success); font-weight: bold; font-size: 15px;">Đã quét nhanh toàn bộ đồ thị! Kết quả được hiển thị ở bảng phía trên.</div>`);
             } else {
                 document.getElementById('ce-path').innerText = "CE = [ ]";
-                setStateDetail(`<div style="color: #e74c3c; font-weight: bold; font-size: 16px;">Đồ thị không thỏa mãn điều kiện Euler.</div>`);
+                setStateDetail(`<div style="color: #e74c3c; font-weight: bold; font-size: 15px;">Đồ thị không thỏa mãn điều kiện Euler.</div>`);
             }
 
             if (simulationState) {
